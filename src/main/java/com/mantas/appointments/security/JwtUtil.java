@@ -1,14 +1,17 @@
 package com.mantas.appointments.security;
 
-
-import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtUtil {
@@ -18,6 +21,8 @@ public class JwtUtil {
 
     @Value("${jwt.expirationTime}")
     private Long expirationTime;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
     /**
      * Generates token for a provided user
@@ -36,47 +41,32 @@ public class JwtUtil {
     }
 
     /**
-     * Extracts username from a token
+     * Extracts username from already verified JWT claims.
+     * Use {@link #validateToken(String)} to receive the verified JWT claims.
      *
-     * @param token Token in string format
+     * @param claims Verified claims object
      * @return Username
      */
-    public String extractUsername(String token) {
-        JwtParser parser = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build();
-
-        return parser.parseSignedClaims(token).getPayload().get("sub", String.class);
+    public String extractUsername(Claims claims) {
+        return claims.get("sub", String.class);
     }
 
     /**
-     * Validates token
-     *
-     * @param token       Token
-     * @param userDetails User information
-     * @return True if token is valid
-     */
-    public boolean validateToken(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername()) &&
-                !isTokenExpired(token);
-    }
-
-    /**
-     * Checks if token is expired
+     * Validate and parse token
      *
      * @param token Token
-     * @return True if token is expired
+     * @return Claims to retrieve values (username, role) from the token or empty Optional if validation failed
      */
-    private boolean isTokenExpired(String token) {
-        JwtParser parser = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build();
-
-        Date expiration = parser.parseSignedClaims(token)
-                .getPayload()
-                .get("exp", Date.class);
-
-        return expiration.before(new Date());
+    public Optional<Claims> validateToken(String token) {
+        try {
+            return Optional.of(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload());
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.warn("JWT Token validation failed: {}", e.getMessage());
+            return Optional.empty();
+        }
     }
-
 }
