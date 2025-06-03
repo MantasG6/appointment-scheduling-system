@@ -74,7 +74,7 @@ public class AuthServiceTests extends AbstractIntegrationTest {
     }
 
     @Test
-    public void loginTestNoUser() {
+    public void loginTestWrongUsername() {
         LoginRequest request = new LoginRequest("testUsername", "testPass");
 
         Assertions.assertThrows(BadCredentialsException.class, () -> authService.login(request));
@@ -85,15 +85,6 @@ public class AuthServiceTests extends AbstractIntegrationTest {
         createUser();
 
         LoginRequest request = new LoginRequest("testUsername", "wrongTestPass");
-
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.login(request));
-    }
-
-    @Test
-    public void loginTestWrongUsername() {
-        createUser();
-
-        LoginRequest request = new LoginRequest("wrongTestUsername", "testPass");
 
         Assertions.assertThrows(BadCredentialsException.class, () -> authService.login(request));
     }
