@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -50,6 +51,17 @@ public class AuthServiceTests extends AbstractIntegrationTest {
         Assertions.assertTrue(passwordEncoder.matches("testPass", newUser.get().getPassword()));
         Assertions.assertEquals("ROLE_USER", newUser.get().getRole());
 
+    }
+
+    @Test
+    public void registerTestDuplicateUsername() {
+        RegisterRequest request = new RegisterRequest("testUsername", "testPass", "User");
+
+        authService.register(request);
+
+        RegisterRequest requestDub = new RegisterRequest("testUsername", "testPass", "User");
+
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authService.register(requestDub));
     }
 
     @Test
