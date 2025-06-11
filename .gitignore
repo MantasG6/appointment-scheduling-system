@@ -33,5 +33,5 @@ build/
 .vscode/
 
 ### Secrets ###
-src/main/resources/secrets.properties
+src/main/resources/secrets.yml
 docker-secrets
