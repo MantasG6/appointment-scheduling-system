@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: optional:secrets.yml
+
+  application:
+    name: appointment-scheduling-system
+
+  # Database configurations
+  datasource:
+    url: jdbc:postgresql://localhost:5432/appointments
+    driver: org.postgresql.Driver
+
+  # Hibernate and JPA configurations
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Security configurations
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/appointments-auth
