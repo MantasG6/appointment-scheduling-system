@@ -13,10 +13,64 @@ services:
     secrets:
       - db_password
       - db_user
+
+  keycloak-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/kc_db_password
+      POSTGRES_DB: keycloak
+      POSTGRES_USER_FILE: /run/secrets/kc_db_user
+    ports:
+      - "5433:5432"
+    volumes:
+      - kc-db-data:/var/lib/postgresql/data
+    secrets:
+      - kc_db_password
+      - kc_db_user
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.5
+    restart: always
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        export KC_DB_USERNAME=$$(cat /run/secrets/kc_db_user)
+        export KC_DB_PASSWORD=$$(cat /run/secrets/kc_db_password)
+        export KC_BOOTSTRAP_ADMIN_USERNAME=$$(cat /run/secrets/kc_admin)
+        export KC_BOOTSTRAP_ADMIN_PASSWORD=$$(cat /run/secrets/kc_admin_password)
+        /opt/keycloak/bin/kc.sh start-dev --import-realm
+    environment:
+      KC_HTTP_PORT: 8081
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import/
+    secrets:
+      - kc_db_password
+      - kc_db_user
+      - kc_admin
+      - kc_admin_password
+    depends_on:
+      - keycloak-db
+
 secrets:
   db_password:
     file: docker-secrets/db_password.txt
   db_user:
     file: docker-secrets/db_user.txt
+  kc_db_password:
+    file: docker-secrets/kc_db_password.txt
+  kc_db_user:
+    file: docker-secrets/kc_db_user.txt
+  kc_admin_password:
+    file: docker-secrets/kc_admin_password.txt
+  kc_admin:
+    file: docker-secrets/kc_admin.txt
+
 volumes:
   pgdata:
+  kc-db-data:

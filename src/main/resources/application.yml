@@ -19,8 +19,9 @@ spring:
       hibernate:
         format_sql: true
 
-# JWT expiration date (1 day)
-jwt:
-  expirationTime: 86400000
-
-#optional:secrets.yml
+  # Security configurations
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/appointments-auth

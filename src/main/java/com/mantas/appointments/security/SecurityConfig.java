@@ -4,39 +4,60 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-    private final CustomUserDetailsService userDetailsService;
+    @Bean
+    AuthoritiesConverter realmRolesAuthoritiesConverter() {
+        return claims -> {
+            Object realmAccessObj = claims.get("realm_access");
+            if (!(realmAccessObj instanceof Map<?, ?> realmAccess)) return List.of();
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService userDetailsService) {
-        this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
+            Object rolesObj = realmAccess.get("roles");
+            if (!(rolesObj instanceof List<?> rolesList)) return List.of();
+
+            return rolesList.stream()
+                    .filter(role -> role instanceof String)
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+        };
+    }
+
+    @Bean
+    JwtAuthenticationConverter authenticationConverter() {
+        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+        authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> realmRolesAuthoritiesConverter().convert(jwt.getClaims()));
+        return authenticationConverter;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/v1/tokens", "api/v1/users").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .userDetailsService(userDetailsService)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        return http.oauth2ResourceServer(resourceServer ->
+                        resourceServer.jwt(jwtDecoder ->
+                                jwtDecoder.jwtAuthenticationConverter(authenticationConverter())))
+                .sessionManagement(sessions ->
+                        sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(requests -> {
+                    requests.requestMatchers("/api/v1/services/**").hasRole("PROVIDER");
+                    requests.anyRequest().authenticated();
+                })
                 .build();
-
     }
 
     @Bean
