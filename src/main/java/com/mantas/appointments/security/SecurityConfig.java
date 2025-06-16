@@ -26,10 +26,14 @@ public class SecurityConfig {
     AuthoritiesConverter realmRolesAuthoritiesConverter() {
         return claims -> {
             Object realmAccessObj = claims.get("realm_access");
-            if (!(realmAccessObj instanceof Map<?, ?> realmAccess)) return List.of();
+            if (!(realmAccessObj instanceof Map<?, ?> realmAccess)) {
+                return List.of();
+            }
 
             Object rolesObj = realmAccess.get("roles");
-            if (!(rolesObj instanceof List<?> rolesList)) return List.of();
+            if (!(rolesObj instanceof List<?> rolesList)) {
+                return List.of();
+            }
 
             return rolesList.stream()
                     .filter(role -> role instanceof String)
