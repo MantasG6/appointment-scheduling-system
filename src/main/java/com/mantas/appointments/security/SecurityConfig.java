@@ -36,9 +36,9 @@ public class SecurityConfig {
             }
 
             return rolesList.stream()
-                    .filter(role -> role instanceof String)
+                    .filter(String.class::isInstance)
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toUnmodifiableList());
         };
     }
 
