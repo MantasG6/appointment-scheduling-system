@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a service entity in the application.
+ * Contains details about the service such as name, description, price, and category.
+ */
 @Data
 @Entity
 @Table(name = "services")
