@@ -18,4 +18,8 @@ public final class TestUtils {
     public static JwtRequestPostProcessor jwtWithRole(String role) {
         return jwt().authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)));
     }
+
+    public static String serviceNotFoundMessage(Long id) {
+        return "Service not found with id: " + id;
+    }
 }
