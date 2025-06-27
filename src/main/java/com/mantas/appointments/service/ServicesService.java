@@ -2,6 +2,7 @@ package com.mantas.appointments.service;
 
 import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.repository.ServicesRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class ServicesService {
 
     /**
      * Fetches all services from the repository.
+     *
      * @return List of all services.
      */
     public List<com.mantas.appointments.entity.Service> getAllServices() {
@@ -28,6 +30,7 @@ public class ServicesService {
 
     /**
      * Fetches a service by its ID.
+     *
      * @param id ID of the service to fetch.
      * @return Service with the specified ID.
      */
@@ -38,20 +41,22 @@ public class ServicesService {
 
     /**
      * Creates a new service.
+     *
      * @param service Service entity to create.
      * @return Created service entity.
      */
-    public com.mantas.appointments.entity.Service createService(com.mantas.appointments.entity.Service service) {
+    public com.mantas.appointments.entity.Service createService(@Valid com.mantas.appointments.entity.Service service) {
         return servicesRepository.save(service);
     }
 
     /**
      * Updates an existing service.
-     * @param id ID of the service to update.
+     *
+     * @param id             ID of the service to update.
      * @param serviceDetails New details for the service.
      * @return Updated service entity.
      */
-    public com.mantas.appointments.entity.Service updateService(Long id, com.mantas.appointments.entity.Service serviceDetails) {
+    public com.mantas.appointments.entity.Service updateService(Long id, @Valid com.mantas.appointments.entity.Service serviceDetails) {
         com.mantas.appointments.entity.Service service = getServiceById(id);
 
         Optional.ofNullable(serviceDetails.getName()).ifPresent(service::setName);
@@ -64,6 +69,7 @@ public class ServicesService {
 
     /**
      * Deletes a service by its ID.
+     *
      * @param id ID of the service to delete.
      */
     public void deleteService(Long id) {
