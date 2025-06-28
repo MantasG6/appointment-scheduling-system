@@ -1,5 +1,7 @@
 package com.mantas.appointments.service;
 
+import com.mantas.appointments.dto.OfferedServiceDTO;
+import com.mantas.appointments.dto.mapper.OfferedServiceDtoMapper;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.repository.OfferedServicesRepository;
@@ -19,23 +21,32 @@ import java.util.Optional;
 public class OfferedServicesService {
 
     private final OfferedServicesRepository servicesRepository;
+    private final OfferedServiceDtoMapper mapper;
 
     /**
      * Fetches all services from the repository.
      *
-     * @return List of all services.
+     * @return List of all services as DTOs.
      */
-    public List<OfferedService> getAllServices() {
-        return servicesRepository.findAll();
+    public List<OfferedServiceDTO> getAllServices() {
+        return servicesRepository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     /**
      * Fetches a service by its ID.
      *
      * @param id ID of the service to fetch.
-     * @return Service with the specified ID.
+     * @return OfferedServiceDTO representing the service with the specified ID.
+     * @throws ServiceNotFoundException if no service is found with the given ID.
      */
-    public OfferedService getServiceById(Long id) {
+    public OfferedServiceDTO getServiceById(Long id) {
+        return mapper.toDto(getServiceFromRepoById(id));
+    }
+
+    private OfferedService getServiceFromRepoById(Long id) {
         return servicesRepository.findById(id)
                 .orElseThrow(() -> new ServiceNotFoundException("Service not found with id: " + id));
     }
@@ -43,29 +54,31 @@ public class OfferedServicesService {
     /**
      * Creates a new service.
      *
-     * @param offeredService Service entity to create.
-     * @return Created service entity.
+     * @param offeredServiceDto DTO representing the service to create.
+     * @return OfferedServiceDTO representing the created service.
      */
-    public OfferedService createService(@Valid OfferedService offeredService) {
-        return servicesRepository.save(offeredService);
+    public OfferedServiceDTO createService(@Valid OfferedServiceDTO offeredServiceDto) {
+        OfferedService offeredService = mapper.toEntity(offeredServiceDto);
+
+        return mapper.toDto(servicesRepository.save(offeredService));
     }
 
     /**
      * Updates an existing service.
      *
      * @param id             ID of the service to update.
-     * @param serviceDetails New details for the service.
-     * @return Updated service entity.
+     * @param serviceDetails DTO containing the new details for the service.
+     * @return OfferedServiceDTO representing the updated service.
      */
-    public OfferedService updateService(Long id, @Valid OfferedService serviceDetails) {
-        OfferedService offeredService = getServiceById(id);
+    public OfferedServiceDTO updateService(Long id, @Valid OfferedServiceDTO serviceDetails) {
+        OfferedService offeredService = getServiceFromRepoById(id);
 
-        Optional.ofNullable(serviceDetails.getName()).ifPresent(offeredService::setName);
-        Optional.ofNullable(serviceDetails.getDescription()).ifPresent(offeredService::setDescription);
-        Optional.ofNullable(serviceDetails.getCategory()).ifPresent(offeredService::setCategory);
-        Optional.ofNullable(serviceDetails.getPrice()).ifPresent(offeredService::setPrice);
+        Optional.ofNullable(serviceDetails.name()).ifPresent(offeredService::setName);
+        Optional.ofNullable(serviceDetails.description()).ifPresent(offeredService::setDescription);
+        Optional.ofNullable(serviceDetails.category()).ifPresent(offeredService::setCategory);
+        Optional.ofNullable(serviceDetails.price()).ifPresent(offeredService::setPrice);
 
-        return servicesRepository.save(offeredService);
+        return mapper.toDto(servicesRepository.save(offeredService));
     }
 
     /**
@@ -74,7 +87,7 @@ public class OfferedServicesService {
      * @param id ID of the service to delete.
      */
     public void deleteService(Long id) {
-        OfferedService offeredService = getServiceById(id);
+        OfferedService offeredService = getServiceFromRepoById(id);
         servicesRepository.delete(offeredService);
     }
 }

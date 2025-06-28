@@ -1,6 +1,6 @@
 package com.mantas.appointments.controller;
 
-import com.mantas.appointments.entity.OfferedService;
+import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.service.OfferedServicesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class ServicesController {
      * @return a list of all services
      */
     @GetMapping
-    public ResponseEntity<List<OfferedService>> getAllServices() {
+    public ResponseEntity<List<OfferedServiceDTO>> getAllServices() {
         return ResponseEntity.ok(servicesService.getAllServices());
     }
 }

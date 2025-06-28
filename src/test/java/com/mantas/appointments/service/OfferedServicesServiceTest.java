@@ -1,5 +1,6 @@
 package com.mantas.appointments.service;
 
+import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.exception.ServiceNotFoundException;
@@ -16,7 +17,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.mantas.appointments.utils.TestUtils.serviceNotFoundMessage;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Testcontainers
@@ -42,7 +45,7 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
         servicesRepository.save(new OfferedService(null, "test2", "test2", BigDecimal.valueOf(10), Category.HAIRCARE));
         servicesRepository.save(new OfferedService(null, "test3", "test3", BigDecimal.valueOf(1000), Category.FITNESS));
 
-        List<OfferedService> result = servicesService.getAllServices();
+        List<OfferedServiceDTO> result = servicesService.getAllServices();
 
         assertEquals(3, result.size());
     }
@@ -50,9 +53,9 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
     @Test
     void givenValidId_whenGetServiceById_thenReturnsCorrectService() {
         OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
-        OfferedService result = servicesService.getServiceById(offeredService.getId());
+        OfferedServiceDTO result = servicesService.getServiceById(offeredService.getId());
 
-        assertEquals("test1", result.getName());
+        assertEquals("test1", result.name());
     }
 
     @Test
@@ -64,41 +67,41 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenValidCreateRequest_whenCreateService_thenSavesAndReturnsService() {
-        OfferedService offeredService = new OfferedService(null, "testCreate", "testCreate", BigDecimal.valueOf(1), Category.OTHER);
-        OfferedService result = servicesService.createService(offeredService);
+        OfferedServiceDTO offeredService = new OfferedServiceDTO("testCreate", "testCreate", BigDecimal.valueOf(1), Category.OTHER);
+        OfferedServiceDTO result = servicesService.createService(offeredService);
 
-        assertEquals("testCreate", result.getName());
+        assertEquals("testCreate", result.name());
     }
 
     @Test
     void givenFullUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
         OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
 
-        OfferedService updatedService = new OfferedService(null, "testUpdate", "testUpdate", BigDecimal.valueOf(1), Category.OTHER);
-        OfferedService result = servicesService.updateService(offeredService.getId(), updatedService);
+        OfferedServiceDTO updatedService = new OfferedServiceDTO("testUpdate", "testUpdate", BigDecimal.valueOf(1), Category.OTHER);
+        OfferedServiceDTO result = servicesService.updateService(offeredService.getId(), updatedService);
 
-        assertEquals("testUpdate", result.getName());
-        assertEquals("testUpdate", result.getDescription());
-        assertEquals(0, result.getPrice().compareTo(BigDecimal.valueOf(1)));
-        assertEquals(Category.OTHER, result.getCategory());
+        assertEquals("testUpdate", result.name());
+        assertEquals("testUpdate", result.description());
+        assertEquals(0, result.price().compareTo(BigDecimal.valueOf(1)));
+        assertEquals(Category.OTHER, result.category());
     }
 
     @Test
     void givenPartialUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
         OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
 
-        OfferedService updatedService = new OfferedService(null, "testUpdate", null, null, null);
-        OfferedService result = servicesService.updateService(offeredService.getId(), updatedService);
+        OfferedServiceDTO updatedService = new OfferedServiceDTO("testUpdate", null, null, null);
+        OfferedServiceDTO result = servicesService.updateService(offeredService.getId(), updatedService);
 
-        assertEquals("testUpdate", result.getName());
-        assertEquals("test1", result.getDescription()); // Unchanged
-        assertEquals(0, result.getPrice().compareTo(BigDecimal.valueOf(100))); // Unchanged
-        assertEquals(Category.DIET, result.getCategory()); // Unchanged
+        assertEquals("testUpdate", result.name());
+        assertEquals("test1", result.description()); // Unchanged
+        assertEquals(0, result.price().compareTo(BigDecimal.valueOf(100))); // Unchanged
+        assertEquals(Category.DIET, result.category()); // Unchanged
     }
 
     @Test
     void givenInvalidId_whenUpdateService_thenThrowsServiceNotFoundException() {
-        OfferedService updatedDetails = new OfferedService(null, "testUpdate", null, null, null);
+        OfferedServiceDTO updatedDetails = new OfferedServiceDTO("testUpdate", null, null, null);
         Exception exception = assertThrows(ServiceNotFoundException.class, () -> servicesService.updateService(invalidId, updatedDetails));
 
         assertEquals(serviceNotFoundMessage(invalidId), exception.getMessage());
