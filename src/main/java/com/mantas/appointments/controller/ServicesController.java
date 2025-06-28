@@ -1,7 +1,7 @@
 package com.mantas.appointments.controller;
 
-import com.mantas.appointments.entity.Service;
-import com.mantas.appointments.service.ServicesService;
+import com.mantas.appointments.entity.OfferedService;
+import com.mantas.appointments.service.OfferedServicesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServicesController {
 
-    private final ServicesService servicesService;
+    private final OfferedServicesService servicesService;
 
     /**
      * Retrieves all services.
@@ -27,7 +27,7 @@ public class ServicesController {
      * @return a list of all services
      */
     @GetMapping
-    public ResponseEntity<List<Service>> getAllServices() {
+    public ResponseEntity<List<OfferedService>> getAllServices() {
         return ResponseEntity.ok(servicesService.getAllServices());
     }
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,10 +21,9 @@ import java.math.BigDecimal;
  */
 @Data
 @Entity
-@Table(name = "services")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Service {
+public class OfferedService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

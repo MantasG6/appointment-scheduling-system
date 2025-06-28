@@ -2,7 +2,7 @@ package com.mantas.appointments.security;
 
 import com.mantas.appointments.controller.AppointmentsController;
 import com.mantas.appointments.controller.ServicesController;
-import com.mantas.appointments.service.ServicesService;
+import com.mantas.appointments.service.OfferedServicesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +22,7 @@ public class RoleAccessTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private ServicesService servicesService;
+    private OfferedServicesService servicesService;
 
     @Test
     void givenClient_whenAccessServices_thenForbidden() throws Exception {

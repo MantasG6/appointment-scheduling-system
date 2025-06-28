@@ -1,10 +1,10 @@
 package com.mantas.appointments.service;
 
 import com.mantas.appointments.entity.Category;
-import com.mantas.appointments.entity.Service;
+import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.integration.AbstractIntegrationTest;
-import com.mantas.appointments.repository.ServicesRepository;
+import com.mantas.appointments.repository.OfferedServicesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ServicesServiceTest extends AbstractIntegrationTest {
+public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Autowired
-    private ServicesService servicesService;
+    private OfferedServicesService servicesService;
 
     @Autowired
-    private ServicesRepository servicesRepository;
+    private OfferedServicesRepository servicesRepository;
 
     private final Long invalidId = 999L;
 
@@ -38,19 +38,19 @@ public class ServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void given3ExistingServices_whenGetAllServices_thenReturns3Services() {
-        servicesRepository.save(new Service(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
-        servicesRepository.save(new Service(null, "test2", "test2", BigDecimal.valueOf(10), Category.HAIRCARE));
-        servicesRepository.save(new Service(null, "test3", "test3", BigDecimal.valueOf(1000), Category.FITNESS));
+        servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        servicesRepository.save(new OfferedService(null, "test2", "test2", BigDecimal.valueOf(10), Category.HAIRCARE));
+        servicesRepository.save(new OfferedService(null, "test3", "test3", BigDecimal.valueOf(1000), Category.FITNESS));
 
-        List<Service> result = servicesService.getAllServices();
+        List<OfferedService> result = servicesService.getAllServices();
 
         assertEquals(3, result.size());
     }
 
     @Test
     void givenValidId_whenGetServiceById_thenReturnsCorrectService() {
-        Service service = servicesRepository.save(new Service(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
-        Service result = servicesService.getServiceById(service.getId());
+        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        OfferedService result = servicesService.getServiceById(offeredService.getId());
 
         assertEquals("test1", result.getName());
     }
@@ -64,18 +64,18 @@ public class ServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenValidCreateRequest_whenCreateService_thenSavesAndReturnsService() {
-        Service service = new Service(null, "testCreate", "testCreate", BigDecimal.valueOf(1), Category.OTHER);
-        Service result = servicesService.createService(service);
+        OfferedService offeredService = new OfferedService(null, "testCreate", "testCreate", BigDecimal.valueOf(1), Category.OTHER);
+        OfferedService result = servicesService.createService(offeredService);
 
         assertEquals("testCreate", result.getName());
     }
 
     @Test
     void givenFullUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        Service service = servicesRepository.save(new Service(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
 
-        Service updatedService = new Service(null, "testUpdate", "testUpdate", BigDecimal.valueOf(1), Category.OTHER);
-        Service result = servicesService.updateService(service.getId(), updatedService);
+        OfferedService updatedService = new OfferedService(null, "testUpdate", "testUpdate", BigDecimal.valueOf(1), Category.OTHER);
+        OfferedService result = servicesService.updateService(offeredService.getId(), updatedService);
 
         assertEquals("testUpdate", result.getName());
         assertEquals("testUpdate", result.getDescription());
@@ -85,10 +85,10 @@ public class ServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenPartialUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        Service service = servicesRepository.save(new Service(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
 
-        Service updatedService = new Service(null, "testUpdate", null, null, null);
-        Service result = servicesService.updateService(service.getId(), updatedService);
+        OfferedService updatedService = new OfferedService(null, "testUpdate", null, null, null);
+        OfferedService result = servicesService.updateService(offeredService.getId(), updatedService);
 
         assertEquals("testUpdate", result.getName());
         assertEquals("test1", result.getDescription()); // Unchanged
@@ -98,7 +98,7 @@ public class ServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenInvalidId_whenUpdateService_thenThrowsServiceNotFoundException() {
-        Service updatedDetails = new Service(null, "testUpdate", null, null, null);
+        OfferedService updatedDetails = new OfferedService(null, "testUpdate", null, null, null);
         Exception exception = assertThrows(ServiceNotFoundException.class, () -> servicesService.updateService(invalidId, updatedDetails));
 
         assertEquals(serviceNotFoundMessage(invalidId), exception.getMessage());
@@ -106,10 +106,10 @@ public class ServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenValidId_whenDeleteService_thenDeletesService() {
-        Service service = servicesRepository.save(new Service(null, "testDelete", "testDelete", BigDecimal.valueOf(100), Category.OTHER));
-        servicesService.deleteService(service.getId());
+        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "testDelete", "testDelete", BigDecimal.valueOf(100), Category.OTHER));
+        servicesService.deleteService(offeredService.getId());
 
-        assertFalse(servicesRepository.findById(service.getId()).isPresent());
+        assertFalse(servicesRepository.findById(offeredService.getId()).isPresent());
     }
 
     @Test
