@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * Represents a service entity in the application.
  * Contains details about the service such as name, description, price, and category.
@@ -37,7 +39,7 @@ public class Service {
 
     @NotNull(message = "Service price cannot be null")
     @Positive(message = "Service price must be greater than zero")
-    private Double price;
+    private BigDecimal price;
 
     @NotNull(message = "Service category cannot be null")
     @Enumerated(EnumType.STRING)
