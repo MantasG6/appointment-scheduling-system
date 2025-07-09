@@ -8,9 +8,7 @@ import com.mantas.appointments.integration.AbstractIntegrationTest;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
@@ -21,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
 @Testcontainers
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Autowired
