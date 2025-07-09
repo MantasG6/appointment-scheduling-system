@@ -30,4 +30,18 @@ public class GlobalExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage()));
         return errors;
     }
+
+    /**
+     * Handles ServiceNotFoundException and returns a structured error response.
+     *
+     * @param ex the ServiceNotFoundException
+     * @return a map containing the error message
+     */
+    @ExceptionHandler(ServiceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleServiceNotFoundException(ServiceNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return error;
+    }
 }
