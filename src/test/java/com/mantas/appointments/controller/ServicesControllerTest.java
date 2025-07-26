@@ -17,7 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -240,5 +243,22 @@ public class ServicesControllerTest {
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.category").value("Service category cannot be null"));
+    }
+
+    @Test
+    void givenValidId_whenDeleteService_thenReturnsNoContent() throws Exception {
+        doNothing().when(offeredServicesService).deleteService(1L);
+
+        mockMvc.perform(delete("/api/v1/services/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void givenInvalidId_whenDeleteService_thenReturnsNotFound() throws Exception {
+        doThrow(new ServiceNotFoundException("Service not found with id: 1")).when(offeredServicesService).deleteService(1L);
+
+        mockMvc.perform(delete("/api/v1/services/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
     }
 }
