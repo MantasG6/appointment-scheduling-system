@@ -229,4 +229,16 @@ public class ServicesControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.price").value("Service price must be greater than zero"));
     }
+
+    @Test
+    void givenNoCategory_whenUpdateService_thenReturnsBadRequest() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService", "testService", BigDecimal.valueOf(100), null);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+
+        mockMvc.perform(put("/api/v1/services/1")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.category").value("Service category cannot be null"));
+    }
 }
