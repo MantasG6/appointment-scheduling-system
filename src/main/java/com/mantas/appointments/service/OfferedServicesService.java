@@ -57,7 +57,7 @@ public class OfferedServicesService {
      * @param offeredServiceDto DTO representing the service to create.
      * @return OfferedServiceDTO representing the created service.
      */
-    public OfferedServiceDTO createService(@Valid OfferedServiceDTO offeredServiceDto) {
+    public OfferedServiceDTO createService(OfferedServiceDTO offeredServiceDto) {
         OfferedService offeredService = mapper.toEntity(offeredServiceDto);
 
         return mapper.toDto(servicesRepository.save(offeredService));
@@ -70,7 +70,7 @@ public class OfferedServicesService {
      * @param serviceDetails DTO containing the new details for the service.
      * @return OfferedServiceDTO representing the updated service.
      */
-    public OfferedServiceDTO updateService(Long id, @Valid OfferedServiceDTO serviceDetails) {
+    public OfferedServiceDTO updateService(Long id, OfferedServiceDTO serviceDetails) {
         OfferedService offeredService = getServiceFromRepoById(id);
 
         Optional.ofNullable(serviceDetails.name()).ifPresent(offeredService::setName);

@@ -29,17 +29,12 @@ public class OfferedService {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Service name cannot be blank")
     private String name;
 
-    @NotBlank(message = "Service description cannot be blank")
     private String description;
 
-    @NotNull(message = "Service price cannot be null")
-    @Positive(message = "Service price must be greater than zero")
     private BigDecimal price;
 
-    @NotNull(message = "Service category cannot be null")
     @Enumerated(EnumType.STRING)
     private Category category;
 }

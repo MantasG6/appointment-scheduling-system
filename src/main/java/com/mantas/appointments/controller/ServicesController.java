@@ -2,6 +2,7 @@ package com.mantas.appointments.controller;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.service.OfferedServicesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,7 +55,7 @@ public class ServicesController {
      * @return the created service
      */
     @PostMapping
-    public ResponseEntity<OfferedServiceDTO> createService(@RequestBody OfferedServiceDTO offeredServiceDto) {
+    public ResponseEntity<OfferedServiceDTO> createService(@RequestBody @Valid OfferedServiceDTO offeredServiceDto) {
         return ResponseEntity.ok(servicesService.createService(offeredServiceDto));
     }
 
@@ -66,7 +67,8 @@ public class ServicesController {
      * @return the updated service
      */
     @PutMapping("/{id}")
-    public ResponseEntity<OfferedServiceDTO> updateService(@PathVariable Long id, @RequestBody OfferedServiceDTO updatedService) {
+    public ResponseEntity<OfferedServiceDTO> updateService(@PathVariable Long id,
+                                                           @RequestBody @Valid OfferedServiceDTO updatedService) {
         return ResponseEntity.ok(servicesService.updateService(id, updatedService));
     }
 
