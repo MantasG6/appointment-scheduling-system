@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
+import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.security.TestSecurityConfig;
 import com.mantas.appointments.service.OfferedServicesService;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,15 @@ public class ServicesControllerTest {
                 .andExpect(jsonPath("$.description").value("testService1"))
                 .andExpect(jsonPath("$.price").value(100))
                 .andExpect(jsonPath("$.category").value("DIET"));
+    }
+
+    @Test
+    void givenInvalidId_WhenGetServiceById_thenReturnsNotFound() throws Exception {
+        when(offeredServicesService.getServiceById(1L)).thenThrow(new ServiceNotFoundException("Service not found with id: 1"));
+
+        mockMvc.perform(get("/api/v1/services/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
     }
 
     @Test
