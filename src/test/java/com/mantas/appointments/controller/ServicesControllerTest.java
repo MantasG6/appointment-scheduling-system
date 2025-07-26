@@ -166,6 +166,19 @@ public class ServicesControllerTest {
     }
 
     @Test
+    void givenInvalidId_whenUpdateService_thenReturnsNotFound() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService1", "testService1", BigDecimal.valueOf(100), Category.OTHER);
+        when(offeredServicesService.updateService(1L, service)).thenThrow(new ServiceNotFoundException("Service not found with id: 1"));
+
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        mockMvc.perform(put("/api/v1/services/1")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
+    }
+
+    @Test
     void givenNoName_whenUpdateService_thenReturnsBadRequest() throws Exception {
         OfferedServiceDTO service = new OfferedServiceDTO("", "testService", BigDecimal.valueOf(100), Category.OTHER);
         String jsonContent = new ObjectMapper().writeValueAsString(service);
