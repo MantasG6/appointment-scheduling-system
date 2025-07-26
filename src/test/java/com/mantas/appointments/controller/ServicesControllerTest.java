@@ -83,4 +83,68 @@ public class ServicesControllerTest {
                 .andExpect(jsonPath("$.price").value(100))
                 .andExpect(jsonPath("$.category").value("DIET"));
     }
+
+    @Test
+    void givenNoName_whenCreateService_thenReturnsBadRequest() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("", "testService", BigDecimal.valueOf(100), Category.OTHER);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").value("Service name cannot be blank"));
+    }
+
+    @Test
+    void givenNoDescription_whenCreateService_thenReturnsOk() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService", "", BigDecimal.valueOf(100), Category.OTHER);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        when(offeredServicesService.createService(service)).thenReturn(service);
+
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("testService"))
+                .andExpect(jsonPath("$.description").value(""))
+                .andExpect(jsonPath("$.price").value(100))
+                .andExpect(jsonPath("$.category").value("OTHER"));
+    }
+
+    @Test
+    void givenPriceNull_whenCreateService_thenReturnsBadRequest() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService", "testService", null, Category.OTHER);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.price").value("Service price cannot be null"));
+    }
+
+    @Test
+    void givenPriceNegative_whenCreateService_thenReturnsBadRequest() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService", "testService", BigDecimal.valueOf(-1), Category.OTHER);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.price").value("Service price must be greater than zero"));
+    }
+
+    @Test
+    void givenNoCategory_whenCreateService_thenReturnsBadRequest() throws Exception {
+        OfferedServiceDTO service = new OfferedServiceDTO("testService", "testService", BigDecimal.valueOf(100), null);
+        String jsonContent = new ObjectMapper().writeValueAsString(service);
+
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(jsonContent))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.category").value("Service category cannot be null"));
+    }
 }
