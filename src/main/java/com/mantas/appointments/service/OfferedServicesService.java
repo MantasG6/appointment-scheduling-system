@@ -5,7 +5,6 @@ import com.mantas.appointments.dto.mapper.OfferedServiceDtoMapper;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.repository.OfferedServicesRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
