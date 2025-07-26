@@ -62,7 +62,7 @@ public class ServicesController {
     /**
      * Updates an existing service.
      *
-     * @param id the ID of the service to update
+     * @param id             the ID of the service to update
      * @param updatedService the DTO representing the updated service
      * @return the updated service
      */
