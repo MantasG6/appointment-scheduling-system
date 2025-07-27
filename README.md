@@ -46,7 +46,7 @@ src
 
 ## ⚙️ Setup Instructions
 ### Prerequisites
-- Java 17+
+- Java 21+
 - Maven
 - Docker (for PostgreSQL container or full containerization)
 
@@ -57,16 +57,19 @@ git clone https://github.com/MantasG6/appointment-scheduling-system.git
 cd appointment-scheduling-system
 ```
 
-#### 2. Configure the application
+#### 2. Set up Keycloak
+This [guide](https://www.baeldung.com/spring-boot-keycloak) was used to set up Keycloak for authentication. Follow the steps to configure Keycloak with the necessary realms, clients, and roles.
+
+#### 3. Configure the application
 
 Edit `src/main/resources/application.properties` with your local PostgreSQL credentials or use Docker to run a containerized DB.
 
-#### 3. Run the application
+#### 4. Run the application
 ```
 ./mvnw spring-boot:run
 ```
 
-#### 4. Access Swagger UI
+#### 5. Access Swagger UI
 
 Visit http://localhost:8080/swagger-ui.html
 
