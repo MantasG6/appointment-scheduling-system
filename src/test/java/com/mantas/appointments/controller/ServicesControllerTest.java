@@ -6,7 +6,7 @@ import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
 import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.security.TestSecurityConfig;
-import com.mantas.appointments.service.OfferedServicesService;
+import com.mantas.appointments.service.IOfferedServicesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,7 +35,7 @@ public class ServicesControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private OfferedServicesService offeredServicesService;
+    private IOfferedServicesService offeredServicesService;
 
     @Test
     void givenServicesEndpoint_whenGetAllServices_thenReturnsOk() throws Exception {

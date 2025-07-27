@@ -1,7 +1,7 @@
 package com.mantas.appointments.controller;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.service.OfferedServicesService;
+import com.mantas.appointments.service.IOfferedServicesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ServicesController {
 
-    private final OfferedServicesService servicesService;
+    private final IOfferedServicesService servicesService;
 
     /**
      * Retrieves all services.

@@ -17,16 +17,12 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
-public class OfferedServicesService {
+public class OfferedServicesService implements IOfferedServicesService {
 
     private final OfferedServicesRepository servicesRepository;
     private final OfferedServiceDtoMapper mapper;
 
-    /**
-     * Fetches all services from the repository.
-     *
-     * @return List of all services as DTOs.
-     */
+    @Override
     public List<OfferedServiceDTO> getAllServices() {
         return servicesRepository.findAll()
                 .stream()
@@ -34,13 +30,7 @@ public class OfferedServicesService {
                 .toList();
     }
 
-    /**
-     * Fetches a service by its ID.
-     *
-     * @param id ID of the service to fetch.
-     * @return OfferedServiceDTO representing the service with the specified ID.
-     * @throws ServiceNotFoundException if no service is found with the given ID.
-     */
+    @Override
     public OfferedServiceDTO getServiceById(Long id) {
         return mapper.toDto(getServiceFromRepoById(id));
     }
@@ -50,25 +40,14 @@ public class OfferedServicesService {
                 .orElseThrow(() -> new ServiceNotFoundException("Service not found with id: " + id));
     }
 
-    /**
-     * Creates a new service.
-     *
-     * @param offeredServiceDto DTO representing the service to create.
-     * @return OfferedServiceDTO representing the created service.
-     */
+    @Override
     public OfferedServiceDTO createService(OfferedServiceDTO offeredServiceDto) {
         OfferedService offeredService = mapper.toEntity(offeredServiceDto);
 
         return mapper.toDto(servicesRepository.save(offeredService));
     }
 
-    /**
-     * Updates an existing service.
-     *
-     * @param id             ID of the service to update.
-     * @param serviceDetails DTO containing the new details for the service.
-     * @return OfferedServiceDTO representing the updated service.
-     */
+    @Override
     public OfferedServiceDTO updateService(Long id, OfferedServiceDTO serviceDetails) {
         OfferedService offeredService = getServiceFromRepoById(id);
 
@@ -80,11 +59,7 @@ public class OfferedServicesService {
         return mapper.toDto(servicesRepository.save(offeredService));
     }
 
-    /**
-     * Deletes a service by its ID.
-     *
-     * @param id ID of the service to delete.
-     */
+    @Override
     public void deleteService(Long id) {
         OfferedService offeredService = getServiceFromRepoById(id);
         servicesRepository.delete(offeredService);
