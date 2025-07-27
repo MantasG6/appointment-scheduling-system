@@ -32,14 +32,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles ServiceNotFoundException and returns a structured error response.
+     * Handles {@link EntityNotFoundException} and returns a structured error response.
      *
-     * @param ex the ServiceNotFoundException
+     * @param ex the {@link EntityNotFoundException}
      * @return a map containing the error message
      */
-    @ExceptionHandler(ServiceNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleServiceNotFoundException(ServiceNotFoundException ex) {
+    public Map<String, String> handleEntityNotFoundException(EntityNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
         return error;

@@ -3,8 +3,8 @@ package com.mantas.appointments.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.Category;
+import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
-import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.security.TestSecurityConfig;
 import com.mantas.appointments.service.IOfferedServicesService;
 import org.junit.jupiter.api.Test;
@@ -65,11 +65,11 @@ public class ServicesControllerTest {
 
     @Test
     void givenInvalidId_WhenGetServiceById_thenReturnsNotFound() throws Exception {
-        when(offeredServicesService.getServiceById(1L)).thenThrow(new ServiceNotFoundException("Service not found with id: 1"));
+        when(offeredServicesService.getServiceById(1L)).thenThrow(new EntityNotFoundException("Entity not found with id: 1"));
 
         mockMvc.perform(get("/api/v1/services/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
+                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
     }
 
     @Test
@@ -171,14 +171,14 @@ public class ServicesControllerTest {
     @Test
     void givenInvalidId_whenUpdateService_thenReturnsNotFound() throws Exception {
         OfferedServiceDTO service = new OfferedServiceDTO("testService1", "testService1", BigDecimal.valueOf(100), Category.OTHER);
-        when(offeredServicesService.updateService(1L, service)).thenThrow(new ServiceNotFoundException("Service not found with id: 1"));
+        when(offeredServicesService.updateService(1L, service)).thenThrow(new EntityNotFoundException("Entity not found with id: 1"));
 
         String jsonContent = new ObjectMapper().writeValueAsString(service);
         mockMvc.perform(put("/api/v1/services/1")
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
+                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
     }
 
     @Test
@@ -255,10 +255,10 @@ public class ServicesControllerTest {
 
     @Test
     void givenInvalidId_whenDeleteService_thenReturnsNotFound() throws Exception {
-        doThrow(new ServiceNotFoundException("Service not found with id: 1")).when(offeredServicesService).deleteService(1L);
+        doThrow(new EntityNotFoundException("Entity not found with id: 1")).when(offeredServicesService).deleteService(1L);
 
         mockMvc.perform(delete("/api/v1/services/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Service not found with id: 1"));
+                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
     }
 }

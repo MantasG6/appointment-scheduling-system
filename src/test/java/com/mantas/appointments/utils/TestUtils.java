@@ -19,7 +19,7 @@ public final class TestUtils {
         return jwt().authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)));
     }
 
-    public static String serviceNotFoundMessage(Long id) {
-        return "Service not found with id: " + id;
+    public static String entityNotFoundMessage(Long id) {
+        return "Entity not found with id: " + id;
     }
 }

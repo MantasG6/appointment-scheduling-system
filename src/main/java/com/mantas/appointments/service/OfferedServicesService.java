@@ -3,13 +3,14 @@ package com.mantas.appointments.service;
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.dto.mapper.OfferedServiceDtoMapper;
 import com.mantas.appointments.entity.OfferedService;
-import com.mantas.appointments.exception.ServiceNotFoundException;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.mantas.appointments.service.utils.ServiceUtils.getEntityFromRepoById;
 
 /**
  * Service class for managing services.
@@ -32,12 +33,7 @@ public class OfferedServicesService implements IOfferedServicesService {
 
     @Override
     public OfferedServiceDTO getServiceById(Long id) {
-        return mapper.toDto(getServiceFromRepoById(id));
-    }
-
-    private OfferedService getServiceFromRepoById(Long id) {
-        return servicesRepository.findById(id)
-                .orElseThrow(() -> new ServiceNotFoundException("Service not found with id: " + id));
+        return mapper.toDto(getEntityFromRepoById(id, servicesRepository));
     }
 
     @Override
@@ -49,7 +45,7 @@ public class OfferedServicesService implements IOfferedServicesService {
 
     @Override
     public OfferedServiceDTO updateService(Long id, OfferedServiceDTO serviceDetails) {
-        OfferedService offeredService = getServiceFromRepoById(id);
+        OfferedService offeredService = getEntityFromRepoById(id, servicesRepository);
 
         Optional.ofNullable(serviceDetails.name()).ifPresent(offeredService::setName);
         Optional.ofNullable(serviceDetails.description()).ifPresent(offeredService::setDescription);
@@ -61,7 +57,7 @@ public class OfferedServicesService implements IOfferedServicesService {
 
     @Override
     public void deleteService(Long id) {
-        OfferedService offeredService = getServiceFromRepoById(id);
+        OfferedService offeredService = getEntityFromRepoById(id, servicesRepository);
         servicesRepository.delete(offeredService);
     }
 }

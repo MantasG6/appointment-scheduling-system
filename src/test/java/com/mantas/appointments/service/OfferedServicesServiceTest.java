@@ -3,7 +3,7 @@ package com.mantas.appointments.service;
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.entity.OfferedService;
-import com.mantas.appointments.exception.ServiceNotFoundException;
+import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.integration.AbstractIntegrationTest;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.mantas.appointments.utils.TestUtils.serviceNotFoundMessage;
+import static com.mantas.appointments.utils.TestUtils.entityNotFoundMessage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,9 +56,9 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenInvalidId_whenGetServiceById_thenThrowsServiceNotFoundException() {
-        Exception exception = assertThrows(ServiceNotFoundException.class, () -> servicesService.getServiceById(invalidId));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.getServiceById(invalidId));
 
-        assertEquals(serviceNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
     }
 
     @Test
@@ -98,9 +98,9 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
     @Test
     void givenInvalidId_whenUpdateService_thenThrowsServiceNotFoundException() {
         OfferedServiceDTO updatedDetails = new OfferedServiceDTO("testUpdate", null, null, null);
-        Exception exception = assertThrows(ServiceNotFoundException.class, () -> servicesService.updateService(invalidId, updatedDetails));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.updateService(invalidId, updatedDetails));
 
-        assertEquals(serviceNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
     }
 
     @Test
@@ -113,8 +113,8 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenInvalidId_whenDeleteService_thenThrowsServiceNotFoundException() {
-        Exception exception = assertThrows(ServiceNotFoundException.class, () -> servicesService.deleteService(invalidId));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.deleteService(invalidId));
 
-        assertEquals(serviceNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
     }
 }
