@@ -7,6 +7,7 @@ import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
 import com.mantas.appointments.security.TestSecurityConfig;
 import com.mantas.appointments.service.IOfferedServicesService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,6 +37,15 @@ public class ServicesControllerTest {
 
     @MockitoBean
     private IOfferedServicesService offeredServicesService;
+
+    private final static String INVALID_CATEGORY_REQUEST = """
+            {
+                "name": "testService",
+                "description": "testService",
+                "price": 100,
+                "category": "INVALID_CATEGORY"
+            }
+            """;
 
     @Test
     void givenServicesEndpoint_whenGetAllServices_thenReturnsOk() throws Exception {
@@ -69,7 +79,7 @@ public class ServicesControllerTest {
 
         mockMvc.perform(get("/api/v1/services/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
+                .andExpect(jsonPath("$.message").value("Entity not found with id: 1"));
     }
 
     @Test
@@ -97,7 +107,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.name").value("Service name cannot be blank"));
+                .andExpect(jsonPath("$.validationErrors.name").value("Service name cannot be blank"));
     }
 
     @Test
@@ -125,7 +135,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.price").value("Service price cannot be null"));
+                .andExpect(jsonPath("$.validationErrors.price").value("Service price cannot be null"));
     }
 
     @Test
@@ -137,7 +147,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.price").value("Service price must be greater than zero"));
+                .andExpect(jsonPath("$.validationErrors.price").value("Service price must be greater than zero"));
     }
 
     @Test
@@ -149,7 +159,16 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.category").value("Service category cannot be null"));
+                .andExpect(jsonPath("$.validationErrors.category").value("Service category cannot be null"));
+    }
+
+    @Test
+    void givenWrongCategory_whenCreateService_thenReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/v1/services")
+                        .contentType("application/json")
+                        .content(INVALID_CATEGORY_REQUEST))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(Matchers.containsString("Invalid value for field 'category'")));
     }
 
     @Test
@@ -178,7 +197,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
+                .andExpect(jsonPath("$.message").value("Entity not found with id: 1"));
     }
 
     @Test
@@ -190,7 +209,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.name").value("Service name cannot be blank"));
+                .andExpect(jsonPath("$.validationErrors.name").value("Service name cannot be blank"));
     }
 
     @Test
@@ -218,7 +237,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.price").value("Service price cannot be null"));
+                .andExpect(jsonPath("$.validationErrors.price").value("Service price cannot be null"));
     }
 
     @Test
@@ -230,7 +249,7 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.price").value("Service price must be greater than zero"));
+                .andExpect(jsonPath("$.validationErrors.price").value("Service price must be greater than zero"));
     }
 
     @Test
@@ -242,7 +261,16 @@ public class ServicesControllerTest {
                         .contentType("application/json")
                         .content(jsonContent))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.category").value("Service category cannot be null"));
+                .andExpect(jsonPath("$.validationErrors.category").value("Service category cannot be null"));
+    }
+
+    @Test
+    void givenWrongCategory_whenUpdateService_thenReturnsBadRequest() throws Exception {
+        mockMvc.perform(put("/api/v1/services/1")
+                        .contentType("application/json")
+                        .content(INVALID_CATEGORY_REQUEST))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(Matchers.containsString("Invalid value for field 'category'")));
     }
 
     @Test
@@ -259,6 +287,6 @@ public class ServicesControllerTest {
 
         mockMvc.perform(delete("/api/v1/services/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Entity not found with id: 1"));
+                .andExpect(jsonPath("$.message").value("Entity not found with id: 1"));
     }
 }
