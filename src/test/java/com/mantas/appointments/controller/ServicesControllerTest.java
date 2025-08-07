@@ -6,7 +6,7 @@ import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
 import com.mantas.appointments.security.TestSecurityConfig;
-import com.mantas.appointments.service.IOfferedServicesService;
+import com.mantas.appointments.service.OfferedServices;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class ServicesControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private IOfferedServicesService offeredServicesService;
+    private OfferedServices offeredServicesService;
 
     private final static String INVALID_CATEGORY_REQUEST = """
             {

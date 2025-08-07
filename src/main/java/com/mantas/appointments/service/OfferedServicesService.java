@@ -18,7 +18,7 @@ import static com.mantas.appointments.service.utils.ServiceUtils.getEntityFromRe
  */
 @Service
 @RequiredArgsConstructor
-public class OfferedServicesService implements IOfferedServicesService {
+public class OfferedServicesService implements OfferedServices {
 
     private final OfferedServicesRepository servicesRepository;
     private final OfferedServiceDtoMapper mapper;

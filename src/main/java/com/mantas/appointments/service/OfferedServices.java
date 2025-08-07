@@ -5,7 +5,7 @@ import com.mantas.appointments.exception.EntityNotFoundException;
 
 import java.util.List;
 
-public interface IOfferedServicesService {
+public interface OfferedServices {
 
     /**
      * Fetches all services from the repository.

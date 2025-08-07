@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Autowired
-    private IOfferedServicesService servicesService;
+    private OfferedServices servicesService;
 
     @Autowired
     private OfferedServicesRepository servicesRepository;
