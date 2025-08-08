@@ -1,4 +1,4 @@
-package com.mantas.appointments.dto.mapper;
+package com.mantas.appointments.mapper;
 
 /**
  * Interface for mapping between Data Transfer Objects (DTOs) and entities.

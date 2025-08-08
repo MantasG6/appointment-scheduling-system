@@ -1,7 +1,7 @@
 package com.mantas.appointments.service;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.dto.mapper.OfferedServiceMapper;
+import com.mantas.appointments.mapper.OfferedServiceMapper;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import lombok.RequiredArgsConstructor;

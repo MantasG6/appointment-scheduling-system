@@ -1,4 +1,4 @@
-package com.mantas.appointments.dto.mapper;
+package com.mantas.appointments.mapper;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.OfferedService;
