@@ -7,6 +7,7 @@ package com.mantas.appointments.dto.mapper;
  * @param <D> the type of the Data Transfer Object
  * @param <E> the type of the entity
  */
+@Deprecated
 public interface DtoMapper<D, E> {
 
     /**

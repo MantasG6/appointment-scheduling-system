@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * Implements the DtoMapper interface.
  */
 @Component
+@Deprecated
 public class OfferedServiceDtoMapper implements DtoMapper<OfferedServiceDTO, OfferedService> {
 
     @Override

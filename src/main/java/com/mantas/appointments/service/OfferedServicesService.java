@@ -1,7 +1,7 @@
 package com.mantas.appointments.service;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.dto.mapper.OfferedServiceDtoMapper;
+import com.mantas.appointments.dto.mapper.OfferedServiceMapper;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import static com.mantas.appointments.service.utils.ServiceUtils.getEntityFromRe
 public class OfferedServicesService implements OfferedServices {
 
     private final OfferedServicesRepository servicesRepository;
-    private final OfferedServiceDtoMapper mapper;
+    private final OfferedServiceMapper mapper;
 
     @Override
     public List<OfferedServiceDTO> getAllServices() {
