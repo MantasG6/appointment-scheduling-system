@@ -120,9 +120,9 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void givenInvalidId_whenDeleteService_thenThrowsServiceNotFoundException() {
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.deleteService(INVALID_ID));
+    void givenInvalidId_whenDeleteService_thenDoNothing() {
+        servicesService.deleteService(INVALID_ID);
 
-        assertEquals(entityNotFoundMessage(INVALID_ID), exception.getMessage());
+        assertFalse(servicesRepository.findById(INVALID_ID).isPresent());
     }
 }

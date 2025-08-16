@@ -57,7 +57,6 @@ public class OfferedServicesService implements OfferedServices {
 
     @Override
     public void deleteService(Long id) {
-        OfferedService offeredService = getEntityFromRepoById(id, servicesRepository);
-        servicesRepository.delete(offeredService);
+        servicesRepository.deleteById(id);
     }
 }

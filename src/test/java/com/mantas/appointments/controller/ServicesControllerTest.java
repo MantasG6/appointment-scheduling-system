@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -286,11 +285,10 @@ public class ServicesControllerTest {
     }
 
     @Test
-    void givenInvalidId_whenDeleteService_thenReturnsNotFound() throws Exception {
-        doThrow(new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND + VALID_ID)).when(offeredServicesService).deleteService(VALID_ID);
+    void givenInvalidId_whenDeleteService_thenReturnNoContent() throws Exception {
+        doNothing().when(offeredServicesService).deleteService(VALID_ID);
 
         mockMvc.perform(delete(ENDPOINT_WITH_ID))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(ErrorMessage.ENTITY_NOT_FOUND + VALID_ID));
+                .andExpect(status().isNoContent());
     }
 }
