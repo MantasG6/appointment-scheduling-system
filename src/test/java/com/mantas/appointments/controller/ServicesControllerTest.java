@@ -39,7 +39,7 @@ public class ServicesControllerTest {
     private OfferedServices offeredServicesService;
 
     private final static Long VALID_ID = 1L;
-    private final static String BASE_ENDPOINT = "/api/v1/services";
+    private final static String BASE_ENDPOINT = ServicesController.SERVICES_API;
     private final static String ENDPOINT_WITH_ID = BASE_ENDPOINT + "/" + VALID_ID;
     private final static String CONTENT_TYPE = "application/json";
     private final static String INVALID_CATEGORY_REQUEST = """

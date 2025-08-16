@@ -18,6 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 public class RoleAccessTest {
 
+    private final static String CLIENT_ROLE = "CLIENT";
+    private final static String PROVIDER_ROLE = "PROVIDER";
+
+    private final static String SERVICES_API = ServicesController.SERVICES_API;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -26,36 +31,36 @@ public class RoleAccessTest {
 
     @Test
     void givenClient_whenAccessServices_thenForbidden() throws Exception {
-        mockMvc.perform(get("/api/v1/services")
-                        .with(jwtWithRole("CLIENT")))
+        mockMvc.perform(get(SERVICES_API)
+                        .with(jwtWithRole(CLIENT_ROLE)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void givenProvider_whenAccessServices_thenOk() throws Exception {
-        mockMvc.perform(get("/api/v1/services")
-                        .with(jwtWithRole("PROVIDER")))
+        mockMvc.perform(get(SERVICES_API)
+                        .with(jwtWithRole(PROVIDER_ROLE)))
                 .andExpect(status().isOk());
     }
 
     @Test
     void givenClient_whenAccessProvider_thenForbidden() throws Exception {
         mockMvc.perform(get("/api/v1/appointments/provider")
-                        .with(jwtWithRole("CLIENT")))
+                        .with(jwtWithRole(CLIENT_ROLE)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void givenProvider_whenAccessProvider_thenOk() throws Exception {
         mockMvc.perform(get("/api/v1/appointments/provider")
-                        .with(jwtWithRole("PROVIDER")))
+                        .with(jwtWithRole(PROVIDER_ROLE)))
                 .andExpect(status().isOk());
     }
 
     @Test
     void givenClient_whenAccessClient_thenOk() throws Exception {
         mockMvc.perform(get("/api/v1/appointments/client")
-                        .with(jwtWithRole("CLIENT")))
+                        .with(jwtWithRole(CLIENT_ROLE)))
                 .andExpect(status().isOk());
     }
 }

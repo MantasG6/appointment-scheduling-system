@@ -21,9 +21,11 @@ import java.util.List;
  * Handles requests related to services.
  */
 @RestController
-@RequestMapping("/api/v1/services")
+@RequestMapping(ServicesController.SERVICES_API)
 @RequiredArgsConstructor
 public class ServicesController {
+
+    public static final String SERVICES_API = "/api/v1/services";
 
     private final OfferedServices servicesService;
 
