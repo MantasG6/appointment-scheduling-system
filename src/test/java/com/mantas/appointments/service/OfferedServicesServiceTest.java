@@ -2,10 +2,10 @@ package com.mantas.appointments.service;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
 import com.mantas.appointments.entity.OfferedService;
-import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.integration.AbstractIntegrationTest;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import com.mantas.appointments.utils.OfferedServiceTestFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

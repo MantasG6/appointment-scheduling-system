@@ -1,6 +1,6 @@
 package com.mantas.appointments.service.utils;
 
-import com.mantas.appointments.exception.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

@@ -2,12 +2,12 @@ package com.mantas.appointments.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.exception.ErrorMessage;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
 import com.mantas.appointments.security.TestSecurityConfig;
 import com.mantas.appointments.service.OfferedServices;
 import com.mantas.appointments.utils.OfferedServiceTestFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

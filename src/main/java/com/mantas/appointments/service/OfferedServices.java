@@ -1,7 +1,7 @@
 package com.mantas.appointments.service;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.exception.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 
