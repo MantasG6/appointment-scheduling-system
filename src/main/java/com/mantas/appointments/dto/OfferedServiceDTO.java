@@ -1,9 +1,11 @@
 package com.mantas.appointments.dto;
 
 import com.mantas.appointments.entity.Category;
+import com.mantas.appointments.exception.ErrorMessage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
@@ -11,17 +13,18 @@ import java.math.BigDecimal;
  * Data Transfer Object for Offered Service.
  * Contains details about the service such as name, description, price, and category.
  */
+@Builder
 public record OfferedServiceDTO(
-        @NotBlank(message = "Service name cannot be blank")
+        @NotBlank(message = ErrorMessage.NAME_BLANK)
         String name,
 
         String description,
 
-        @NotNull(message = "Service price cannot be null")
-        @Positive(message = "Service price must be greater than zero")
+        @NotNull(message = ErrorMessage.PRICE_NULL)
+        @Positive(message = ErrorMessage.PRICE_NEGATIVE)
         BigDecimal price,
 
-        @NotNull(message = "Service category cannot be null")
+        @NotNull(message = ErrorMessage.CATEGORY_NULL)
         Category category
 ) {
 }

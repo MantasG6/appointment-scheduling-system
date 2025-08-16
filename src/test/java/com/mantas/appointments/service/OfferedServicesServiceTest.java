@@ -1,11 +1,11 @@
 package com.mantas.appointments.service;
 
 import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.entity.Category;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.exception.EntityNotFoundException;
 import com.mantas.appointments.integration.AbstractIntegrationTest;
 import com.mantas.appointments.repository.OfferedServicesRepository;
+import com.mantas.appointments.utils.OfferedServiceTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.mantas.appointments.utils.TestUtils.entityNotFoundMessage;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,99 +23,106 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Testcontainers
 public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
+    private static final Long INVALID_ID = 999L;
+
     @Autowired
     private OfferedServices servicesService;
 
     @Autowired
     private OfferedServicesRepository servicesRepository;
 
-    private final Long invalidId = 999L;
+    private OfferedService defaultService;
 
     @BeforeEach
-    void cleanDB() {
+    void setUp() {
         servicesRepository.deleteAll();
+        defaultService = servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
     }
 
     @Test
-    void given3ExistingServices_whenGetAllServices_thenReturns3Services() {
-        servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
-        servicesRepository.save(new OfferedService(null, "test2", "test2", BigDecimal.valueOf(10), Category.HAIRCARE));
-        servicesRepository.save(new OfferedService(null, "test3", "test3", BigDecimal.valueOf(1000), Category.FITNESS));
+    void givenMultipleServices_whenGetAllServices_thenReturnsAllServices() {
+        // Create another service to ensure multiple entries
+        servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
 
         List<OfferedServiceDTO> result = servicesService.getAllServices();
 
-        assertEquals(3, result.size());
+        assertEquals(2, result.size());
     }
 
     @Test
     void givenValidId_whenGetServiceById_thenReturnsCorrectService() {
-        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
-        OfferedServiceDTO result = servicesService.getServiceById(offeredService.getId());
+        OfferedServiceDTO result = servicesService.getServiceById(defaultService.getId());
 
-        assertEquals("test1", result.name());
+        assertThat(result)
+                .isNotNull()
+                .extracting(OfferedServiceDTO::name, OfferedServiceDTO::description, OfferedServiceDTO::price, OfferedServiceDTO::category)
+                .satisfies(tuple -> {
+                    assertThat(tuple.get(0)).isEqualTo(defaultService.getName());
+                    assertThat(tuple.get(1)).isEqualTo(defaultService.getDescription());
+                    assertThat((BigDecimal) tuple.get(2)).isEqualByComparingTo(defaultService.getPrice());
+                    assertThat(tuple.get(3)).isEqualTo(defaultService.getCategory());
+                });
     }
 
     @Test
     void givenInvalidId_whenGetServiceById_thenThrowsServiceNotFoundException() {
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.getServiceById(invalidId));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.getServiceById(INVALID_ID));
 
-        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(INVALID_ID), exception.getMessage());
     }
 
     @Test
     void givenValidCreateRequest_whenCreateService_thenSavesAndReturnsService() {
-        OfferedServiceDTO offeredService = new OfferedServiceDTO("testCreate", "testCreate", BigDecimal.valueOf(1), Category.OTHER);
+        OfferedServiceDTO offeredService = OfferedServiceTestFactory.buildDefaultOfferedServiceDTO();
         OfferedServiceDTO result = servicesService.createService(offeredService);
 
-        assertEquals("testCreate", result.name());
+        assertThat(result)
+                .isNotNull()
+                .extracting(OfferedServiceDTO::name, OfferedServiceDTO::description, OfferedServiceDTO::price, OfferedServiceDTO::category)
+                .containsExactly(offeredService.name(), offeredService.description(), offeredService.price(), offeredService.category());
     }
 
     @Test
     void givenFullUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        OfferedServiceDTO updatedService = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
+        OfferedServiceDTO result = servicesService.updateService(defaultService.getId(), updatedService);
 
-        OfferedServiceDTO updatedService = new OfferedServiceDTO("testUpdate", "testUpdate", BigDecimal.valueOf(1), Category.OTHER);
-        OfferedServiceDTO result = servicesService.updateService(offeredService.getId(), updatedService);
-
-        assertEquals("testUpdate", result.name());
-        assertEquals("testUpdate", result.description());
-        assertEquals(0, result.price().compareTo(BigDecimal.valueOf(1)));
-        assertEquals(Category.OTHER, result.category());
+        assertEquals(OfferedServiceTestFactory.UPDATED_NAME, result.name());
+        assertEquals(OfferedServiceTestFactory.UPDATED_DESCRIPTION, result.description());
+        assertThat(OfferedServiceTestFactory.UPDATED_PRICE).isEqualByComparingTo(result.price());
+        assertEquals(OfferedServiceTestFactory.UPDATED_CATEGORY, result.category());
     }
 
     @Test
     void givenPartialUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "test1", "test1", BigDecimal.valueOf(100), Category.DIET));
+        OfferedServiceDTO updatedService = OfferedServiceTestFactory.buildPartialUpdateOfferedServiceDTO();
+        OfferedServiceDTO result = servicesService.updateService(defaultService.getId(), updatedService);
 
-        OfferedServiceDTO updatedService = new OfferedServiceDTO("testUpdate", null, null, null);
-        OfferedServiceDTO result = servicesService.updateService(offeredService.getId(), updatedService);
-
-        assertEquals("testUpdate", result.name());
-        assertEquals("test1", result.description()); // Unchanged
-        assertEquals(0, result.price().compareTo(BigDecimal.valueOf(100))); // Unchanged
-        assertEquals(Category.DIET, result.category()); // Unchanged
+        assertEquals(OfferedServiceTestFactory.UPDATED_NAME, result.name());
+        assertEquals(OfferedServiceTestFactory.DEFAULT_DESCRIPTION, result.description()); // Unchanged
+        assertThat(OfferedServiceTestFactory.DEFAULT_PRICE).isEqualByComparingTo(result.price()); // Unchanged
+        assertEquals(OfferedServiceTestFactory.DEFAULT_CATEGORY, result.category()); // Unchanged
     }
 
     @Test
     void givenInvalidId_whenUpdateService_thenThrowsServiceNotFoundException() {
-        OfferedServiceDTO updatedDetails = new OfferedServiceDTO("testUpdate", null, null, null);
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.updateService(invalidId, updatedDetails));
+        OfferedServiceDTO updatedDetails = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.updateService(INVALID_ID, updatedDetails));
 
-        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(INVALID_ID), exception.getMessage());
     }
 
     @Test
     void givenValidId_whenDeleteService_thenDeletesService() {
-        OfferedService offeredService = servicesRepository.save(new OfferedService(null, "testDelete", "testDelete", BigDecimal.valueOf(100), Category.OTHER));
-        servicesService.deleteService(offeredService.getId());
+        servicesService.deleteService(defaultService.getId());
 
-        assertFalse(servicesRepository.findById(offeredService.getId()).isPresent());
+        assertFalse(servicesRepository.findById(defaultService.getId()).isPresent());
     }
 
     @Test
     void givenInvalidId_whenDeleteService_thenThrowsServiceNotFoundException() {
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.deleteService(invalidId));
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.deleteService(INVALID_ID));
 
-        assertEquals(entityNotFoundMessage(invalidId), exception.getMessage());
+        assertEquals(entityNotFoundMessage(INVALID_ID), exception.getMessage());
     }
 }
