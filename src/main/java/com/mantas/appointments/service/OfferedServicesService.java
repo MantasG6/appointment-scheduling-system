@@ -1,8 +1,9 @@
 package com.mantas.appointments.service;
 
-import com.mantas.appointments.dto.OfferedServiceDTO;
-import com.mantas.appointments.mapper.OfferedServiceMapper;
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
 import com.mantas.appointments.entity.OfferedService;
+import com.mantas.appointments.mapper.OfferedServiceMapper;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class OfferedServicesService implements OfferedServices {
     private final OfferedServiceMapper mapper;
 
     @Override
-    public List<OfferedServiceDTO> getAllServices() {
+    public List<OfferedServiceResponse> getAllServices() {
         return servicesRepository.findAll()
                 .stream()
                 .map(mapper::toDto)
@@ -32,19 +33,19 @@ public class OfferedServicesService implements OfferedServices {
     }
 
     @Override
-    public OfferedServiceDTO getServiceById(Long id) {
+    public OfferedServiceResponse getServiceById(Long id) {
         return mapper.toDto(getEntityFromRepoById(id, servicesRepository));
     }
 
     @Override
-    public OfferedServiceDTO createService(OfferedServiceDTO offeredServiceDto) {
-        OfferedService offeredService = mapper.toEntity(offeredServiceDto);
+    public OfferedServiceResponse createService(OfferedServiceRequest offeredServiceRequest) {
+        OfferedService offeredService = mapper.toEntity(offeredServiceRequest);
 
         return mapper.toDto(servicesRepository.save(offeredService));
     }
 
     @Override
-    public OfferedServiceDTO updateService(Long id, OfferedServiceDTO serviceDetails) {
+    public OfferedServiceResponse updateService(Long id, OfferedServiceRequest serviceDetails) {
         OfferedService offeredService = getEntityFromRepoById(id, servicesRepository);
 
         Optional.ofNullable(serviceDetails.name()).ifPresent(offeredService::setName);

@@ -1,6 +1,7 @@
 package com.mantas.appointments.service;
 
-import com.mantas.appointments.dto.OfferedServiceDTO;
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
 import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.integration.AbstractIntegrationTest;
 import com.mantas.appointments.repository.OfferedServicesRepository;
@@ -18,6 +19,7 @@ import static com.mantas.appointments.utils.TestUtils.entityNotFoundMessage;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
@@ -36,7 +38,8 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
     @BeforeEach
     void setUp() {
         servicesRepository.deleteAll();
-        defaultService = servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
+        OfferedService created = servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
+        defaultService = servicesRepository.findById(created.getId()).orElse(null);
     }
 
     @Test
@@ -44,23 +47,32 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
         // Create another service to ensure multiple entries
         servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
 
-        List<OfferedServiceDTO> result = servicesService.getAllServices();
+        List<OfferedServiceResponse> result = servicesService.getAllServices();
 
         assertEquals(2, result.size());
     }
 
     @Test
     void givenValidId_whenGetServiceById_thenReturnsCorrectService() {
-        OfferedServiceDTO result = servicesService.getServiceById(defaultService.getId());
+        OfferedServiceResponse result = servicesService.getServiceById(defaultService.getId());
 
         assertThat(result)
                 .isNotNull()
-                .extracting(OfferedServiceDTO::name, OfferedServiceDTO::description, OfferedServiceDTO::price, OfferedServiceDTO::category)
+                .extracting(
+                        OfferedServiceResponse::name,
+                        OfferedServiceResponse::description,
+                        OfferedServiceResponse::price,
+                        OfferedServiceResponse::category,
+                        OfferedServiceResponse::created,
+                        OfferedServiceResponse::updated
+                )
                 .satisfies(tuple -> {
                     assertThat(tuple.get(0)).isEqualTo(defaultService.getName());
                     assertThat(tuple.get(1)).isEqualTo(defaultService.getDescription());
                     assertThat((BigDecimal) tuple.get(2)).isEqualByComparingTo(defaultService.getPrice());
                     assertThat(tuple.get(3)).isEqualTo(defaultService.getCategory());
+                    assertThat(tuple.get(4)).isEqualTo(defaultService.getCreated());
+                    assertThat(tuple.get(5)).isEqualTo(defaultService.getUpdated());
                 });
     }
 
@@ -73,30 +85,47 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenValidCreateRequest_whenCreateService_thenSavesAndReturnsService() {
-        OfferedServiceDTO offeredService = OfferedServiceTestFactory.buildDefaultOfferedServiceDTO();
-        OfferedServiceDTO result = servicesService.createService(offeredService);
+        OfferedServiceRequest offeredServiceRequest = OfferedServiceTestFactory.buildDefaultOfferedServiceRequest();
+        OfferedServiceResponse result = servicesService.createService(offeredServiceRequest);
 
         assertThat(result)
                 .isNotNull()
-                .extracting(OfferedServiceDTO::name, OfferedServiceDTO::description, OfferedServiceDTO::price, OfferedServiceDTO::category)
-                .containsExactly(offeredService.name(), offeredService.description(), offeredService.price(), offeredService.category());
+                .extracting(
+                        OfferedServiceResponse::name,
+                        OfferedServiceResponse::description,
+                        OfferedServiceResponse::price,
+                        OfferedServiceResponse::category
+                )
+                .containsExactly(
+                        offeredServiceRequest.name(),
+                        offeredServiceRequest.description(),
+                        offeredServiceRequest.price(),
+                        offeredServiceRequest.category()
+                );
+
+        // Validate created and updated fields
+        assertThat(result.created()).isNotNull();
+        assertThat(result.updated()).isNotNull();
+        assertEquals(result.created(), result.updated()); // For a new entity, created and updated should be the same
     }
 
     @Test
     void givenFullUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        OfferedServiceDTO updatedService = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
-        OfferedServiceDTO result = servicesService.updateService(defaultService.getId(), updatedService);
+        OfferedServiceRequest updateServiceRequest = OfferedServiceTestFactory.buildFullUpdateOfferedServiceRequest();
+        OfferedServiceResponse result = servicesService.updateService(defaultService.getId(), updateServiceRequest);
 
-        assertEquals(OfferedServiceTestFactory.UPDATED_NAME, result.name());
-        assertEquals(OfferedServiceTestFactory.UPDATED_DESCRIPTION, result.description());
-        assertThat(OfferedServiceTestFactory.UPDATED_PRICE).isEqualByComparingTo(result.price());
-        assertEquals(OfferedServiceTestFactory.UPDATED_CATEGORY, result.category());
+        assertEquals(updateServiceRequest.name(), result.name());
+        assertEquals(updateServiceRequest.description(), result.description());
+        assertThat(updateServiceRequest.price()).isEqualByComparingTo(result.price());
+        assertEquals(updateServiceRequest.category(), result.category());
+        assertEquals(defaultService.getCreated(), result.created()); // Unchanged
+        assertNotEquals(defaultService.getUpdated(), result.updated()); // Updated
     }
 
     @Test
     void givenPartialUpdate_whenUpdateService_thenUpdatesAndReturnsService() {
-        OfferedServiceDTO updatedService = OfferedServiceTestFactory.buildPartialUpdateOfferedServiceDTO();
-        OfferedServiceDTO result = servicesService.updateService(defaultService.getId(), updatedService);
+        OfferedServiceRequest updateServiceRequest = OfferedServiceTestFactory.buildPartialUpdateOfferedServiceRequest();
+        OfferedServiceResponse result = servicesService.updateService(defaultService.getId(), updateServiceRequest);
 
         assertEquals(OfferedServiceTestFactory.UPDATED_NAME, result.name());
         assertEquals(OfferedServiceTestFactory.DEFAULT_DESCRIPTION, result.description()); // Unchanged
@@ -106,8 +135,8 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
 
     @Test
     void givenInvalidId_whenUpdateService_thenThrowsServiceNotFoundException() {
-        OfferedServiceDTO updatedDetails = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.updateService(INVALID_ID, updatedDetails));
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildFullUpdateOfferedServiceRequest();
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> servicesService.updateService(INVALID_ID, request));
 
         assertEquals(entityNotFoundMessage(INVALID_ID), exception.getMessage());
     }

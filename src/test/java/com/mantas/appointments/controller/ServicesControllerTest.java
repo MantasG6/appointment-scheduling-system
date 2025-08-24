@@ -1,7 +1,8 @@
 package com.mantas.appointments.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mantas.appointments.dto.OfferedServiceDTO;
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
 import com.mantas.appointments.exception.ErrorMessage;
 import com.mantas.appointments.exception.GlobalExceptionHandler;
 import com.mantas.appointments.security.TestSecurityConfig;
@@ -11,13 +12,18 @@ import jakarta.persistence.EntityNotFoundException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
+import static com.mantas.appointments.utils.TestUtils.assertJsonResultMatchesDefaultOfferedServiceResponse;
+import static com.mantas.appointments.utils.TestUtils.assertJsonResultMatchesNoDescOfferedServiceResponse;
+import static com.mantas.appointments.utils.TestUtils.assertJsonResultMatchesUpdatedOfferedServiceResponse;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -27,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ServicesController.class)
+@WebMvcTest(controllers = ServicesController.class, excludeAutoConfiguration = {DataJpaTest.class})
 @Import({GlobalExceptionHandler.class, TestSecurityConfig.class})
 public class ServicesControllerTest {
 
@@ -52,9 +58,9 @@ public class ServicesControllerTest {
 
     @Test
     void givenServicesEndpoint_whenGetAllServices_thenReturnsOk() throws Exception {
-        List<OfferedServiceDTO> services = List.of(
-                OfferedServiceTestFactory.buildDefaultOfferedServiceDTO(),
-                OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO()
+        List<OfferedServiceResponse> services = List.of(
+                OfferedServiceTestFactory.buildDefaultOfferedServiceResponse(),
+                OfferedServiceTestFactory.buildFullUpdateOfferedServiceResponse()
         );
         when(offeredServicesService.getAllServices()).thenReturn(services);
 
@@ -65,15 +71,12 @@ public class ServicesControllerTest {
 
     @Test
     void givenValidId_whenGetServiceById_thenReturnsOk() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildDefaultOfferedServiceDTO();
+        OfferedServiceResponse service = OfferedServiceTestFactory.buildDefaultOfferedServiceResponse();
         when(offeredServicesService.getServiceById(VALID_ID)).thenReturn(service);
 
-        mockMvc.perform(get(ENDPOINT_WITH_ID))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(OfferedServiceTestFactory.DEFAULT_NAME))
-                .andExpect(jsonPath("$.description").value(OfferedServiceTestFactory.DEFAULT_DESCRIPTION))
-                .andExpect(jsonPath("$.price").value(OfferedServiceTestFactory.DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(OfferedServiceTestFactory.DEFAULT_CATEGORY.toString()));
+        ResultActions result = mockMvc.perform(get(ENDPOINT_WITH_ID))
+                .andExpect(status().isOk());
+        assertJsonResultMatchesDefaultOfferedServiceResponse(result);
     }
 
     @Test
@@ -87,24 +90,22 @@ public class ServicesControllerTest {
 
     @Test
     void givenValidRequest_whenCreateService_thenReturnsCreated() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildDefaultOfferedServiceDTO();
-        when(offeredServicesService.createService(service)).thenReturn(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildDefaultOfferedServiceRequest();
+        OfferedServiceResponse response = OfferedServiceTestFactory.buildDefaultOfferedServiceResponse();
+        when(offeredServicesService.createService(request)).thenReturn(response);
 
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
-        mockMvc.perform(post(BASE_ENDPOINT)
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
+        ResultActions result = mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(OfferedServiceTestFactory.DEFAULT_NAME))
-                .andExpect(jsonPath("$.description").value(OfferedServiceTestFactory.DEFAULT_DESCRIPTION))
-                .andExpect(jsonPath("$.price").value(OfferedServiceTestFactory.DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(OfferedServiceTestFactory.DEFAULT_CATEGORY.toString()));
+                .andExpect(status().isOk());
+        assertJsonResultMatchesDefaultOfferedServiceResponse(result);
     }
 
     @Test
     void givenNoName_whenCreateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNoNameOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNoNameOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
@@ -115,24 +116,22 @@ public class ServicesControllerTest {
 
     @Test
     void givenNoDescription_whenCreateService_thenReturnsOk() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNoDescOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
-        when(offeredServicesService.createService(service)).thenReturn(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNoDescOfferedServiceRequest();
+        OfferedServiceResponse response = OfferedServiceTestFactory.buildNoDescOfferedServiceResponse();
+        when(offeredServicesService.createService(request)).thenReturn(response);
 
-        mockMvc.perform(post(BASE_ENDPOINT)
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
+        ResultActions result = mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(OfferedServiceTestFactory.DEFAULT_NAME))
-                .andExpect(jsonPath("$.description").value(""))
-                .andExpect(jsonPath("$.price").value(OfferedServiceTestFactory.DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(OfferedServiceTestFactory.DEFAULT_CATEGORY.toString()));
+                .andExpect(status().isOk());
+        assertJsonResultMatchesNoDescOfferedServiceResponse(result);
     }
 
     @Test
     void givenPriceNull_whenCreateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildPriceNullOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildPriceNullOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
@@ -143,8 +142,8 @@ public class ServicesControllerTest {
 
     @Test
     void givenPriceNegative_whenCreateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNegativePriceOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNegativePriceOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
@@ -155,8 +154,8 @@ public class ServicesControllerTest {
 
     @Test
     void givenNoCategory_whenCreateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildCategoryNullOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildCategoryNullOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(BASE_ENDPOINT)
                         .contentType(CONTENT_TYPE)
@@ -176,26 +175,24 @@ public class ServicesControllerTest {
 
     @Test
     void givenValidRequest_whenUpdateService_thenReturnsOk() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
-        when(offeredServicesService.updateService(VALID_ID, service)).thenReturn(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildFullUpdateOfferedServiceRequest();
+        OfferedServiceResponse response = OfferedServiceTestFactory.buildFullUpdateOfferedServiceResponse();
+        when(offeredServicesService.updateService(VALID_ID, request)).thenReturn(response);
 
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
-        mockMvc.perform(put(BASE_ENDPOINT + "/" + VALID_ID)
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
+        ResultActions result = mockMvc.perform(put(BASE_ENDPOINT + "/" + VALID_ID)
                         .contentType(CONTENT_TYPE)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(OfferedServiceTestFactory.UPDATED_NAME))
-                .andExpect(jsonPath("$.description").value(OfferedServiceTestFactory.UPDATED_DESCRIPTION))
-                .andExpect(jsonPath("$.price").value(OfferedServiceTestFactory.UPDATED_PRICE))
-                .andExpect(jsonPath("$.category").value(OfferedServiceTestFactory.UPDATED_CATEGORY.toString()));
+                .andExpect(status().isOk());
+        assertJsonResultMatchesUpdatedOfferedServiceResponse(result);
     }
 
     @Test
     void givenInvalidId_whenUpdateService_thenReturnsNotFound() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildFullUpdateOfferedServiceDTO();
-        when(offeredServicesService.updateService(VALID_ID, service)).thenThrow(new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND + VALID_ID));
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildDefaultOfferedServiceRequest();
+        when(offeredServicesService.updateService(VALID_ID, request)).thenThrow(new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND + VALID_ID));
 
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
         mockMvc.perform(put(BASE_ENDPOINT + "/" + VALID_ID)
                         .contentType(CONTENT_TYPE)
                         .content(jsonContent))
@@ -205,8 +202,8 @@ public class ServicesControllerTest {
 
     @Test
     void givenNoName_whenUpdateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNoNameOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNoNameOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(put(ENDPOINT_WITH_ID)
                         .contentType(CONTENT_TYPE)
@@ -217,24 +214,22 @@ public class ServicesControllerTest {
 
     @Test
     void givenNoDescription_whenUpdateService_thenReturnsOk() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNoDescOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
-        when(offeredServicesService.updateService(1L, service)).thenReturn(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNoDescOfferedServiceRequest();
+        OfferedServiceResponse response = OfferedServiceTestFactory.buildNoDescOfferedServiceResponse();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
+        when(offeredServicesService.updateService(1L, request)).thenReturn(response);
 
-        mockMvc.perform(put(ENDPOINT_WITH_ID)
+        ResultActions result = mockMvc.perform(put(ENDPOINT_WITH_ID)
                         .contentType(CONTENT_TYPE)
                         .content(jsonContent))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(OfferedServiceTestFactory.DEFAULT_NAME))
-                .andExpect(jsonPath("$.description").value(""))
-                .andExpect(jsonPath("$.price").value(OfferedServiceTestFactory.DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(OfferedServiceTestFactory.DEFAULT_CATEGORY.toString()));
+                .andExpect(status().isOk());
+        assertJsonResultMatchesNoDescOfferedServiceResponse(result);
     }
 
     @Test
     void givenPriceNull_whenUpdateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildPriceNullOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildPriceNullOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(put(ENDPOINT_WITH_ID)
                         .contentType(CONTENT_TYPE)
@@ -245,8 +240,8 @@ public class ServicesControllerTest {
 
     @Test
     void givenPriceNegative_whenUpdateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildNegativePriceOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildNegativePriceOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(put(ENDPOINT_WITH_ID)
                         .contentType(CONTENT_TYPE)
@@ -257,8 +252,8 @@ public class ServicesControllerTest {
 
     @Test
     void givenNoCategory_whenUpdateService_thenReturnsBadRequest() throws Exception {
-        OfferedServiceDTO service = OfferedServiceTestFactory.buildCategoryNullOfferedServiceDTO();
-        String jsonContent = new ObjectMapper().writeValueAsString(service);
+        OfferedServiceRequest request = OfferedServiceTestFactory.buildCategoryNullOfferedServiceRequest();
+        String jsonContent = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(put(ENDPOINT_WITH_ID)
                         .contentType(CONTENT_TYPE)

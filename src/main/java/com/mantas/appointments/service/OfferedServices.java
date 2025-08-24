@@ -1,6 +1,7 @@
 package com.mantas.appointments.service;
 
-import com.mantas.appointments.dto.OfferedServiceDTO;
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
@@ -12,33 +13,33 @@ public interface OfferedServices {
      *
      * @return List of all services as DTOs.
      */
-    List<OfferedServiceDTO> getAllServices();
+    List<OfferedServiceResponse> getAllServices();
 
     /**
      * Fetches a service by its ID.
      *
      * @param id ID of the service to fetch.
-     * @return {@link OfferedServiceDTO} representing the service with the specified ID.
+     * @return {@link OfferedServiceResponse} representing the service with the specified ID.
      * @throws EntityNotFoundException if no service is found with the given ID.
      */
-    OfferedServiceDTO getServiceById(Long id);
+    OfferedServiceResponse getServiceById(Long id);
 
     /**
      * Creates a new service.
      *
-     * @param offeredServiceDto DTO representing the service to create.
-     * @return {@link OfferedServiceDTO} representing the created service.
+     * @param offeredServiceRequest representing the service to create.
+     * @return {@link OfferedServiceResponse} representing the created service.
      */
-    OfferedServiceDTO createService(OfferedServiceDTO offeredServiceDto);
+    OfferedServiceResponse createService(OfferedServiceRequest offeredServiceRequest);
 
     /**
      * Updates an existing service.
      *
-     * @param id                ID of the service to update.
-     * @param offeredServiceDto DTO containing the new details for the service.
-     * @return {@link OfferedServiceDTO} representing the updated service.
+     * @param id                    ID of the service to update.
+     * @param offeredServiceRequest containing the new details for the service.
+     * @return {@link OfferedServiceResponse} representing the updated service.
      */
-    OfferedServiceDTO updateService(Long id, OfferedServiceDTO offeredServiceDto);
+    OfferedServiceResponse updateService(Long id, OfferedServiceRequest offeredServiceRequest);
 
     /**
      * Deletes a service by its ID.

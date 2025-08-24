@@ -10,12 +10,11 @@ import lombok.Builder;
 import java.math.BigDecimal;
 
 /**
- * Data Transfer Object for Offered Service.
+ * Data Transfer Object for Offered Service Request.
  * Contains details about the service such as name, description, price, and category.
  */
 @Builder
-@Deprecated
-public record OfferedServiceDTO(
+public record OfferedServiceRequest(
         @NotBlank(message = ErrorMessage.NAME_BLANK)
         String name,
 

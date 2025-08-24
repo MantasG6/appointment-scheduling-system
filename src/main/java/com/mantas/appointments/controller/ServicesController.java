@@ -1,6 +1,7 @@
 package com.mantas.appointments.controller;
 
-import com.mantas.appointments.dto.OfferedServiceDTO;
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
 import com.mantas.appointments.service.OfferedServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class ServicesController {
      * @return a list of all services
      */
     @GetMapping
-    public ResponseEntity<List<OfferedServiceDTO>> getAllServices() {
+    public ResponseEntity<List<OfferedServiceResponse>> getAllServices() {
         return ResponseEntity.ok(servicesService.getAllServices());
     }
 
@@ -46,7 +47,7 @@ public class ServicesController {
      * @return the service with the specified ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<OfferedServiceDTO> getServiceById(@PathVariable Long id) {
+    public ResponseEntity<OfferedServiceResponse> getServiceById(@PathVariable Long id) {
         return ResponseEntity.ok(servicesService.getServiceById(id));
     }
 
@@ -57,7 +58,7 @@ public class ServicesController {
      * @return the created service
      */
     @PostMapping
-    public ResponseEntity<OfferedServiceDTO> createService(@RequestBody @Valid OfferedServiceDTO offeredServiceDto) {
+    public ResponseEntity<OfferedServiceResponse> createService(@RequestBody @Valid OfferedServiceRequest offeredServiceDto) {
         return ResponseEntity.ok(servicesService.createService(offeredServiceDto));
     }
 
@@ -69,8 +70,8 @@ public class ServicesController {
      * @return the updated service
      */
     @PutMapping("/{id}")
-    public ResponseEntity<OfferedServiceDTO> updateService(@PathVariable Long id,
-                                                           @RequestBody @Valid OfferedServiceDTO updatedService) {
+    public ResponseEntity<OfferedServiceResponse> updateService(@PathVariable Long id,
+                                                                @RequestBody @Valid OfferedServiceRequest updatedService) {
         return ResponseEntity.ok(servicesService.updateService(id, updatedService));
     }
 

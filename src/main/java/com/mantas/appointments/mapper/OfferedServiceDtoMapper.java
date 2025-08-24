@@ -29,7 +29,9 @@ public class OfferedServiceDtoMapper implements DtoMapper<OfferedServiceDTO, Off
                 dto.name(),
                 dto.description(),
                 dto.price(),
-                dto.category()
+                dto.category(),
+                null,
+                null
         );
     }
 }

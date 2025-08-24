@@ -1,6 +1,8 @@
 package com.mantas.appointments.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +12,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Represents a service entity in the application.
@@ -22,6 +28,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class OfferedService {
 
     @Id
@@ -36,4 +43,12 @@ public class OfferedService {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime created;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updated;
 }
