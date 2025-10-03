@@ -1,15 +1,89 @@
 package com.mantas.appointments.controller;
 
+import com.mantas.appointments.dto.OfferedServiceRequest;
+import com.mantas.appointments.dto.OfferedServiceResponse;
+import com.mantas.appointments.service.OfferedServices;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+/**
+ * Controller for managing services.
+ * Handles requests related to services.
+ */
 @RestController
-@RequestMapping("/api/v1/services")
+@RequestMapping(ServicesController.SERVICES_API)
+@RequiredArgsConstructor
 public class ServicesController {
 
+    public static final String SERVICES_API = "/api/v1/services";
+
+    private final OfferedServices servicesService;
+
+    /**
+     * Retrieves all services.
+     *
+     * @return a list of all services
+     */
     @GetMapping
-    public String getAllServices() {
-        return "All Services";
+    public ResponseEntity<List<OfferedServiceResponse>> getAllServices() {
+        return ResponseEntity.ok(servicesService.getAllServices());
+    }
+
+    /**
+     * Retrieves a service by its ID.
+     *
+     * @param id the ID of the service to retrieve
+     * @return the service with the specified ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<OfferedServiceResponse> getServiceById(@PathVariable Long id) {
+        return ResponseEntity.ok(servicesService.getServiceById(id));
+    }
+
+    /**
+     * Creates a new service.
+     *
+     * @param offeredServiceDto the DTO representing the service to create
+     * @return the created service
+     */
+    @PostMapping
+    public ResponseEntity<OfferedServiceResponse> createService(@RequestBody @Valid OfferedServiceRequest offeredServiceDto) {
+        return ResponseEntity.ok(servicesService.createService(offeredServiceDto));
+    }
+
+    /**
+     * Updates an existing service.
+     *
+     * @param id             the ID of the service to update
+     * @param updatedService the DTO representing the updated service
+     * @return the updated service
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<OfferedServiceResponse> updateService(@PathVariable Long id,
+                                                                @RequestBody @Valid OfferedServiceRequest updatedService) {
+        return ResponseEntity.ok(servicesService.updateService(id, updatedService));
+    }
+
+    /**
+     * Deletes a service by its ID.
+     *
+     * @param id the ID of the service to delete
+     * @return a response indicating the deletion was successful
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+        servicesService.deleteService(id);
+        return ResponseEntity.noContent().build();
     }
 }
