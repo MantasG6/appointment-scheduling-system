@@ -6,11 +6,14 @@ import com.mantas.appointments.entity.OfferedService;
 import com.mantas.appointments.mapper.OfferedServiceMapper;
 import com.mantas.appointments.repository.OfferedServicesRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.mantas.appointments.service.utils.ServiceUtils.extractUserIdFromAuthentication;
 import static com.mantas.appointments.service.utils.ServiceUtils.getEntityFromRepoById;
 
 /**
@@ -40,6 +43,10 @@ public class OfferedServicesService implements OfferedServices {
     @Override
     public OfferedServiceResponse createService(OfferedServiceRequest offeredServiceRequest) {
         OfferedService offeredService = mapper.toEntity(offeredServiceRequest);
+
+        // Set the ownerId from the authenticated user's details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        offeredService.setOwnerId(extractUserIdFromAuthentication(authentication));
 
         return mapper.toDto(servicesRepository.save(offeredService));
     }

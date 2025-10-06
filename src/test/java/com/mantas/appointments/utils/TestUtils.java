@@ -1,13 +1,10 @@
 package com.mantas.appointments.utils;
 
 import com.jayway.jsonpath.JsonPath;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_CATEGORY;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_CREATED;
@@ -21,7 +18,6 @@ import static com.mantas.appointments.utils.OfferedServiceTestFactory.UPDATED_NA
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.UPDATED_PRICE;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.UPDATED_UPDATE_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 /**
@@ -34,16 +30,6 @@ public final class TestUtils {
      */
     private TestUtils() {
         throw new UnsupportedOperationException("Utility class");
-    }
-
-    /**
-     * Creates a {@link JwtRequestPostProcessor} with the specified role.
-     *
-     * @param role the role to be added to the JWT
-     * @return a {@link JwtRequestPostProcessor} with the specified role
-     */
-    public static JwtRequestPostProcessor jwtWithRole(String role) {
-        return jwt().authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)));
     }
 
     /**

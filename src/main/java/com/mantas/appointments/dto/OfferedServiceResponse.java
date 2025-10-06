@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 /**
  * Data Transfer Object for Offered Service Response.
- * Contains details about the service such as
- * id, name, description, price, category, date of creation and date of last update.
+ * Contains details about the service.
  */
 @Builder
 public record OfferedServiceResponse(
         String name,
         String description,
         BigDecimal price,
+        String ownerId,
         Category category,
         LocalDateTime created,
         LocalDateTime updated

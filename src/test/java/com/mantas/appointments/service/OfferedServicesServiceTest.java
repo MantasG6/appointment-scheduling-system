@@ -15,6 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.mantas.appointments.utils.TestSecurityUtils.initializeDefaultTestUserAuthentication;
 import static com.mantas.appointments.utils.TestUtils.entityNotFoundMessage;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +41,7 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
         servicesRepository.deleteAll();
         OfferedService created = servicesRepository.save(OfferedServiceTestFactory.buildDefaultOfferedService());
         defaultService = servicesRepository.findById(created.getId()).orElse(null);
+        initializeDefaultTestUserAuthentication();
     }
 
     @Test
