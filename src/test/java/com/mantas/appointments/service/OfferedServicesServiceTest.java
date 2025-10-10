@@ -96,13 +96,15 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
                         OfferedServiceResponse::name,
                         OfferedServiceResponse::description,
                         OfferedServiceResponse::price,
-                        OfferedServiceResponse::category
+                        OfferedServiceResponse::category,
+                        OfferedServiceResponse::ownerId
                 )
                 .containsExactly(
                         offeredServiceRequest.name(),
                         offeredServiceRequest.description(),
                         offeredServiceRequest.price(),
-                        offeredServiceRequest.category()
+                        offeredServiceRequest.category(),
+                        OfferedServiceTestFactory.DEFAULT_OWNER_ID
                 );
 
         // Validate created and updated fields
@@ -120,6 +122,7 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
         assertEquals(updateServiceRequest.description(), result.description());
         assertThat(updateServiceRequest.price()).isEqualByComparingTo(result.price());
         assertEquals(updateServiceRequest.category(), result.category());
+        assertEquals(defaultService.getOwnerId(), result.ownerId()); // Unchanged
         assertEquals(defaultService.getCreated(), result.created()); // Unchanged
         assertNotEquals(defaultService.getUpdated(), result.updated()); // Updated
     }
@@ -130,9 +133,10 @@ public class OfferedServicesServiceTest extends AbstractIntegrationTest {
         OfferedServiceResponse result = servicesService.updateService(defaultService.getId(), updateServiceRequest);
 
         assertEquals(OfferedServiceTestFactory.UPDATED_NAME, result.name());
-        assertEquals(OfferedServiceTestFactory.DEFAULT_DESCRIPTION, result.description()); // Unchanged
-        assertThat(OfferedServiceTestFactory.DEFAULT_PRICE).isEqualByComparingTo(result.price()); // Unchanged
-        assertEquals(OfferedServiceTestFactory.DEFAULT_CATEGORY, result.category()); // Unchanged
+        assertEquals(defaultService.getDescription(), result.description()); // Unchanged
+        assertThat(defaultService.getPrice()).isEqualByComparingTo(result.price()); // Unchanged
+        assertEquals(defaultService.getCategory(), result.category()); // Unchanged
+        assertEquals(defaultService.getOwnerId(), result.ownerId()); // Unchanged
     }
 
     @Test

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static com.mantas.appointments.service.utils.ServiceUtils.extractUserIdFromAuthentication;
 import static com.mantas.appointments.service.utils.ServiceUtils.getEntityFromRepoById;
-import static com.mantas.appointments.utils.TestSecurityUtils.DEFAULT_OWNER_ID;
+import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_OWNER_ID;
 import static com.mantas.appointments.utils.TestUtils.entityNotFoundMessage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,5 +63,7 @@ class ServiceUtilsTest {
 
         assertEquals(DEFAULT_OWNER_ID, extractUserIdFromAuthentication(authentication));
     }
+
+    // TODO add negative test case for extractUserIdFromAuthentication (when principal is not Jwt)
 
 }

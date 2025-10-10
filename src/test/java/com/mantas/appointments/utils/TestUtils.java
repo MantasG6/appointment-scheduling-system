@@ -10,6 +10,7 @@ import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_CA
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_CREATED;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_DESCRIPTION;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_NAME;
+import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_OWNER_ID;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_PRICE;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.DEFAULT_UPDATED;
 import static com.mantas.appointments.utils.OfferedServiceTestFactory.UPDATED_CATEGORY;
@@ -48,7 +49,8 @@ public final class TestUtils {
                 .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
                 .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
                 .andExpect(jsonPath("$.price").value(DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY.toString()));
+                .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY.toString()))
+                .andExpect(jsonPath("$.ownerId").value(DEFAULT_OWNER_ID));
     }
 
     public static ResultActions assertJsonResultMatchesNoDescOfferedServiceResponse(ResultActions result) throws Exception {
@@ -57,7 +59,8 @@ public final class TestUtils {
                 .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
                 .andExpect(jsonPath("$.description").value(""))
                 .andExpect(jsonPath("$.price").value(DEFAULT_PRICE))
-                .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY.toString()));
+                .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY.toString()))
+                .andExpect(jsonPath("$.ownerId").value(DEFAULT_OWNER_ID));
     }
 
     public static ResultActions assertJsonResultMatchesUpdatedOfferedServiceResponse(ResultActions result) throws Exception {
