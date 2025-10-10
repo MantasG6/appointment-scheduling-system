@@ -1,5 +1,6 @@
 package com.mantas.appointments.service.utils;
 
+import com.mantas.appointments.exception.ErrorMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,7 @@ public final class ServiceUtils {
      */
     public static <E, R extends JpaRepository<E, Long>> E getEntityFromRepoById(Long id, R repository) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND + id));
     }
 
     /**
@@ -46,6 +47,6 @@ public final class ServiceUtils {
         if (authentication.getPrincipal() instanceof Jwt jwt) {
             return jwt.getSubject(); // sub claim represents the user ID
         }
-        throw new IllegalArgumentException("Authentication principal is not of type Jwt");
+        throw new IllegalArgumentException(ErrorMessage.AUTHENTICATION_NOT_JWT);
     }
 }
