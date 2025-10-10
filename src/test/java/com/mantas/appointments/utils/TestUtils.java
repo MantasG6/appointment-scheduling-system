@@ -1,6 +1,7 @@
 package com.mantas.appointments.utils;
 
 import com.jayway.jsonpath.JsonPath;
+import com.mantas.appointments.exception.ErrorMessage;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
@@ -40,7 +41,7 @@ public final class TestUtils {
      * @return a formatted error message
      */
     public static String entityNotFoundMessage(Long id) {
-        return "Entity not found with id: " + id;
+        return ErrorMessage.ENTITY_NOT_FOUND + id;
     }
 
     public static ResultActions assertJsonResultMatchesDefaultOfferedServiceResponse(ResultActions result) throws Exception {

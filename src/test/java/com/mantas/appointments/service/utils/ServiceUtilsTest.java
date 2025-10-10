@@ -1,5 +1,6 @@
 package com.mantas.appointments.service.utils;
 
+import com.mantas.appointments.exception.ErrorMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +65,17 @@ class ServiceUtilsTest {
         assertEquals(DEFAULT_OWNER_ID, extractUserIdFromAuthentication(authentication));
     }
 
-    // TODO add negative test case for extractUserIdFromAuthentication (when principal is not Jwt)
+    @Test
+    void givenInvalidAuth_whenExtractUserIdFromAuthentication_thenThrowsIllegalArgumentException() {
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getPrincipal()).thenReturn(null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Exception exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> extractUserIdFromAuthentication(authentication)
+        );
+        assertEquals(ErrorMessage.AUTHENTICATION_NOT_JWT, exception.getMessage());
+    }
 
 }
