@@ -16,7 +16,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
  */
 public class TestSecurityUtils {
 
-    private static final String DEFAULT_OWNER_ID = "e1nj18771_!1uh7";
+    public static final String DEFAULT_OWNER_ID = "e1nj18771_!1uh7";
 
     private TestSecurityUtils() {
         throw new UnsupportedOperationException("Utility class");
