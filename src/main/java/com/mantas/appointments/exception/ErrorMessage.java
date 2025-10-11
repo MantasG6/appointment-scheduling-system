@@ -8,5 +8,6 @@ public final class ErrorMessage {
     public final static String PRICE_NEGATIVE = "Service price must be greater than zero";
     public final static String CATEGORY_NULL = "Service category cannot be null";
     public final static String INVALID_CATEGORY = "Invalid value for field 'category'";
+    public final static String AUTHENTICATION_NOT_JWT = "Authentication principal is not of type Jwt";
 
 }

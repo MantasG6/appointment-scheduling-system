@@ -30,5 +30,6 @@ public interface OfferedServiceMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "created", ignore = true)
     @Mapping(target = "updated", ignore = true)
+    @Mapping(target = "ownerId", ignore = true)
     OfferedService toEntity(OfferedServiceRequest dto);
 }

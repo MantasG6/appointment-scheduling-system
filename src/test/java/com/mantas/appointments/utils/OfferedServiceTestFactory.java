@@ -18,6 +18,7 @@ public final class OfferedServiceTestFactory {
     public static final String DEFAULT_DESCRIPTION = "test description";
     public static final BigDecimal DEFAULT_PRICE = BigDecimal.valueOf(100);
     public static final Category DEFAULT_CATEGORY = Category.OTHER;
+    public static final String DEFAULT_OWNER_ID = "e1nj18771_!1uh7";
     public static final LocalDateTime DEFAULT_CREATED = LocalDateTime.now();
     public static final LocalDateTime DEFAULT_UPDATED = LocalDateTime.now();
 
@@ -60,6 +61,7 @@ public final class OfferedServiceTestFactory {
                 .description(DEFAULT_DESCRIPTION)
                 .price(DEFAULT_PRICE)
                 .category(DEFAULT_CATEGORY)
+                .ownerId(DEFAULT_OWNER_ID)
                 .created(DEFAULT_CREATED)
                 .updated(DEFAULT_UPDATED)
                 .build();
@@ -104,6 +106,7 @@ public final class OfferedServiceTestFactory {
                 .description("")
                 .price(DEFAULT_PRICE)
                 .category(DEFAULT_CATEGORY)
+                .ownerId(DEFAULT_OWNER_ID)
                 .created(DEFAULT_CREATED)
                 .updated(DEFAULT_UPDATED)
                 .build();
@@ -191,6 +194,7 @@ public final class OfferedServiceTestFactory {
                 .description(UPDATED_DESCRIPTION)
                 .price(UPDATED_PRICE)
                 .category(UPDATED_CATEGORY)
+                .ownerId(DEFAULT_OWNER_ID)
                 .created(DEFAULT_CREATED)
                 .updated(UPDATED_UPDATE_DATE)
                 .build();
@@ -208,6 +212,7 @@ public final class OfferedServiceTestFactory {
                 .description(DEFAULT_DESCRIPTION)
                 .price(DEFAULT_PRICE)
                 .category(DEFAULT_CATEGORY)
+                .ownerId(DEFAULT_OWNER_ID)
                 .created(DEFAULT_CREATED)
                 .updated(DEFAULT_UPDATED)
                 .build();

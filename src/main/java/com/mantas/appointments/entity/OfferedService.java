@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 
 /**
  * Represents a service entity in the application.
- * Contains details about the service such as name, description, price, and category.
+ * Contains details about the service.
  */
 @Data
 @Entity
@@ -40,6 +40,8 @@ public class OfferedService {
     private String description;
 
     private BigDecimal price;
+
+    private String ownerId; // Keycloak user ID of the service owner
 
     @Enumerated(EnumType.STRING)
     private Category category;
